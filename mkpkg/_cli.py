@@ -121,6 +121,11 @@ def main():
     def package(*segments):
         return os.path.join(package_name, *segments)
 
+    def template(*segments):
+        path = os.path.join(os.path.dirname(__file__), "template", *segments)
+        with open(path) as f:
+            return f.read()
+
     def _script(name):
         return """
         import click
@@ -488,17 +493,9 @@ def main():
                 now=datetime.datetime.now(), author=arguments.author,
             ) + license
         ),
-        root("MANIFEST.in"): """
-            include *.rst
-            include COPYING
-            include tox.ini
-            include .coveragerc
-        """,
+        root("MANIFEST.in"): template("MANIFEST.in"),
         root("setup.cfg"): ini(*setup_sections),
-        root("setup.py"): """
-            from setuptools import setup
-            setup(use_scm_version=True)
-        """,
+        root("setup.py"): template("setup.py"),
         root(".coveragerc"): """
             # vim: filetype=dosini:
             [run]
@@ -506,28 +503,13 @@ def main():
             source = {package_name}
         """.format(package_name=package_name),
         root("tox.ini"): ini(*tox_sections),
-        root(".testr.conf"): ini(
-            defaults=[
-                (
-                    "test_command",
-                    "python -m subunit.run discover . $LISTOPT $IDOPTION",
-                ), (
-                    "test_id_option",
-                    "--load-list $IDFILE",
-                ), (
-                    "test_list_option",
-                    "--list",
-                ),
-            ],
-        ),
+        root(".testr.conf"): template(".testr.conf"),
     }
 
     if arguments.docs:
-        files[root("docs", "requirements.txt")] = """
-            pygments-github-lexers
-            sphinx
-            sphinxcontrib-spelling
-        """
+        files[root("docs", "requirements.txt")] = template(
+            "docs", "requirements.txt",
+        )
 
     if not arguments.closed:
         files.update(
