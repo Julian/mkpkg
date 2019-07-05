@@ -465,7 +465,7 @@ def main(
     else:
         files.update(
             (root(path), content)
-            for path, content in core_source_paths.iteritems()
+            for path, content in core_source_paths.items()
         )
         targets = files
 
@@ -476,7 +476,7 @@ def main(
                 sys.exit("{0} already exists!".format(name))
             raise
 
-    for path, content in targets.iteritems():
+    for path, content in targets.items():
         try:
             os.makedirs(os.path.dirname(os.path.abspath(path)))
         except OSError as err:
