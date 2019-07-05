@@ -200,13 +200,7 @@ def main(
 
         core_source_paths = {
             package("tests", "__init__.py"): "",
-            package("__init__.py"): """
-            from pkg_resources import get_distribution, DistributionNotFound
-            try:
-                __version__ = get_distribution(__name__).version
-            except DistributionNotFound:  # pragma: no cover
-                pass
-            """.format(name=package_name),
+            package("__init__.py"): template("package", "__init__.py"),
         }
 
         if len(cli) == 1:
