@@ -1,7 +1,7 @@
 #! /usr/bin/env python2
 
 from datetime import datetime
-import ConfigParser
+import configparser
 import errno
 import io
 import os
@@ -254,78 +254,78 @@ def main(
         if "jython" in supports:
             yield "Programming Language :: Python :: Implementation :: Jython"
 
-    tox_envlist = sorted(supports) + ["readme", "safety"]
+    tox_envlist = sorted(supports) + [u"readme", u"safety"]
     if style:
-        tox_envlist.append("style")
+        tox_envlist.append(u"style")
     if docs:
-        tox_envlist.append("docs-{html,doctest,linkcheck,spelling,style}")
+        tox_envlist.append(u"docs-{html,doctest,linkcheck,spelling,style}")
 
     tox_sections = [
         (
-            "tox", [
-                ("envlist", tox_envlist),
-                ("skipsdist", "True"),
+            u"tox", [
+                (u"envlist", tox_envlist),
+                (u"skipsdist", u"True"),
             ],
         ), (
-            "testenv", [
-                ("setenv", ""),
-                ("changedir", "{envtmpdir}"),
+            u"testenv", [
+                (u"setenv", u""),
+                (u"changedir", u"{envtmpdir}"),
                 (
-                    "commands", [
-                        "{envbindir}/pip install {toxinidir}",
-                        "{envbindir}/" + test_runner + " {posargs:" + tests + "}",
-                        "{envpython} -m doctest {toxinidir}/README.rst",
+                    u"commands", [
+                        u"{envbindir}/pip install {toxinidir}",
+                        u"{envbindir}/" + test_runner + u" {posargs:" + tests + "}",
+                        u"{envpython} -m doctest {toxinidir}/README.rst",
                     ],
                 ),
                 (
-                    "deps", test_deps + [
-                        "" if closed else "codecov," + "coverage: coverage",
-                    ],
-                ),
-            ],
-        ), (
-            "testenv:coverage", [
-                (
-                    "setenv", [
-                        "{[testenv]setenv}",
-                        "COVERAGE_FILE={envtmpdir}/coverage-data",
-                    ],
-                ),
-                (
-                    "commands", [
-                        "{envbindir}/pip install {toxinidir}",
-                        "{envbindir}/coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/" + test_runner + " " + tests,
-                        "{envbindir}/coverage report --rcfile={toxinidir}/.coveragerc --show-missing",
-                        "{envbindir}/coverage html --directory={envtmpdir}/htmlcov --rcfile={toxinidir}/.coveragerc {posargs}",
+                    u"deps", test_deps + [
+                        u"" if closed else u"codecov," + u"coverage: coverage",
                     ],
                 ),
             ],
         ), (
-            "testenv:readme", [
-                ("changedir", "{toxinidir}"),
-                ("deps", "readme_renderer"),
+            u"testenv:coverage", [
                 (
-                    "commands", [
-                        "{envbindir}/python setup.py check --restructuredtext --strict",
+                    u"setenv", [
+                        u"{[testenv]setenv}",
+                        u"COVERAGE_FILE={envtmpdir}/coverage-data",
+                    ],
+                ),
+                (
+                    u"commands", [
+                        u"{envbindir}/pip install {toxinidir}",
+                        u"{envbindir}/coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/" + test_runner + " " + tests,
+                        u"{envbindir}/coverage report --rcfile={toxinidir}/.coveragerc --show-missing",
+                        u"{envbindir}/coverage html --directory={envtmpdir}/htmlcov --rcfile={toxinidir}/.coveragerc {posargs}",
                     ],
                 ),
             ],
         ), (
-            "testenv:safety", [
-                ("deps", "safety"),
+            u"testenv:readme", [
+                (u"changedir", u"{toxinidir}"),
+                (u"deps", u"readme_renderer"),
                 (
-                    "commands", [
-                        "{envbindir}/pip install {toxinidir}",
-                        "{envbindir}/safety check",
+                    u"commands", [
+                        u"{envbindir}/python setup.py check --restructuredtext --strict",
                     ],
                 ),
             ],
         ), (
-            "testenv:style", [
-                ("deps", "ebb-lint"),
+            u"testenv:safety", [
+                (u"deps", u"safety"),
                 (
-                    "commands",
-                    "flake8 {posargs} --max-complexity 10 {toxinidir}/" + tests + " {toxinidir}/setup.py",
+                    u"commands", [
+                        u"{envbindir}/pip install {toxinidir}",
+                        u"{envbindir}/safety check",
+                    ],
+                ),
+            ],
+        ), (
+            u"testenv:style", [
+                (u"deps", u"ebb-lint"),
+                (
+                    u"commands",
+                    u"flake8 {posargs} --max-complexity 10 {toxinidir}/" + tests + u" {toxinidir}/setup.py",
                 ),
             ],
         ),
@@ -335,33 +335,33 @@ def main(
         tox_sections.extend(
             [
                 (
-                    "testenv:docs-" + each, [
-                        ("changedir", "docs"),
-                        ("whitelist_externals", "make"),
+                    u"testenv:docs-" + each, [
+                        (u"changedir", u"docs"),
+                        (u"whitelist_externals", u"make"),
                         (
-                            "commands", (
-                                "make "
-                                "-f {toxinidir}/docs/Makefile "
-                                "BUILDDIR={envtmpdir}/build "
-                                "SPHINXOPTS='-a -c {toxinidir}/docs/ -n -T -W {posargs}' "
+                            u"commands", (
+                                u"make "
+                                u"-f {toxinidir}/docs/Makefile "
+                                u"BUILDDIR={envtmpdir}/build "
+                                u"SPHINXOPTS='-a -c {toxinidir}/docs/ -n -T -W {posargs}' "
                             ) + each,
                         ), (
-                            "deps", [
-                                "-r{toxinidir}/docs/requirements.txt",
-                                "{toxinidir}",
+                            u"deps", [
+                                u"-r{toxinidir}/docs/requirements.txt",
+                                u"{toxinidir}",
                             ],
                         ),
                     ],
-                ) for each in ["html", "doctest", "linkcheck", "spelling"]
+                ) for each in [u"html", u"doctest", u"linkcheck", u"spelling"]
             ],
         )
         tox_sections.extend(
             [
                 (
-                    "testenv:docs-style", [
-                        ("changedir", "docs"),
-                        ("commands", "doc8 {posargs} {toxinidir}/docs"),
-                        ("deps", ["doc8", "pygments", "pygments-github-lexers"]),
+                    u"testenv:docs-style", [
+                        (u"changedir", u"docs"),
+                        (u"commands", u"doc8 {posargs} {toxinidir}/docs"),
+                        (u"deps", [u"doc8", u"pygments", u"pygments-github-lexers"]),
                     ],
                 ),
             ],
@@ -370,22 +370,22 @@ def main(
     if not closed:
         tox_sections.append(
             (
-                "testenv:codecov", [
+                u"testenv:codecov", [
                     (
-                        "passenv", "CODECOV* CI TRAVIS TRAVIS_*",
+                        u"passenv", u"CODECOV* CI TRAVIS TRAVIS_*",
                     ), (
-                        "setenv", [
-                            "{[testenv]setenv}",
-                            "COVERAGE_DEBUG_FILE={envtmpdir}/coverage-debug",
-                            "COVERAGE_FILE={envtmpdir}/coverage-data",
+                        u"setenv", [
+                            u"{[testenv]setenv}",
+                            u"COVERAGE_DEBUG_FILE={envtmpdir}/coverage-debug",
+                            u"COVERAGE_FILE={envtmpdir}/coverage-data",
                         ],
                     ),
                     (
-                        "commands", [
-                            "{envbindir}/pip install {toxinidir}",
-                            "{envbindir}/coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/" + test_runner + " " + tests,
-                            "{envbindir}/coverage xml -o {envtmpdir}/coverage.xml",
-                            "{envbindir}/codecov --required --disable gcov --file {envtmpdir}/coverage.xml",
+                        u"commands", [
+                            u"{envbindir}/pip install {toxinidir}",
+                            u"{envbindir}/coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/" + test_runner + " " + tests,
+                            u"{envbindir}/coverage xml -o {envtmpdir}/coverage.xml",
+                            u"{envbindir}/codecov --required --disable gcov --file {envtmpdir}/coverage.xml",
                         ],
                     ),
                 ],
@@ -394,36 +394,36 @@ def main(
 
     setup_sections = [
         (
-            "metadata", [
-                ("name", package_name),
-                ("url", "https://github.com/Julian/" + name),
+            u"metadata", [
+                (u"name", package_name),
+                (u"url", u"https://github.com/Julian/" + name),
 
-                ("description", ""),
-                ("long_description", "file: README.rst"),
+                (u"description", u""),
+                (u"long_description", u"file: README.rst"),
 
-                ("author", author),
+                (u"author", author),
                 (
                     "author_email", (
                         author_email or
-                        "Julian+" + package_name + "@GrayVines.com"
+                        u"Julian+" + package_name + u"@GrayVines.com"
                     ),
                 ),
-                ("classifiers", list(classifiers())),
+                (u"classifiers", list(classifiers())),
             ],
         ), (
-            "options", [
+            u"options", [
                 contents,
-                ("setup_requires", "setuptools_scm"),
+                (u"setup_requires", u"setuptools_scm"),
             ] + (
-                [("install_requires", ["click"])] if console_scripts else []
+                [(u"install_requires", [u"click"])] if console_scripts else []
             ),
         ),
     ] + (
-        [("options.entry_points", [("console_scripts", console_scripts)])]
+        [(u"options.entry_points", [(u"console_scripts", console_scripts)])]
         if console_scripts
         else []
     ) + [
-        ("flake8", [("exclude", package_name + "/__init__.py")]),
+        (u"flake8", [(u"exclude", package_name + u"/__init__.py")]),
     ]
 
     heading = """
@@ -538,16 +538,16 @@ def ini(*sections, **kwargs):
     Construct an INI-formatted str with the given contents.
     """
 
-    lol_python = io.BytesIO()
-    parser = ConfigParser.SafeConfigParser(**kwargs)
+    lol_python = io.StringIO()
+    parser = configparser.ConfigParser(**kwargs)
     for section, contents in sections:
         parser.add_section(section)
         for option, value in contents:
             if isinstance(value, list):
-                value = "\n" + "\n".join(value)
+                value = u"\n" + u"\n".join(value)
             parser.set(section, option, value)
     parser.write(lol_python)
-    value = lol_python.getvalue().replace("\t", "    ").replace("= \n", "=\n")
+    value = lol_python.getvalue().replace(u"\t", u"    ").replace(u"= \n", u"=\n")
     return value[:-1]
 
 
