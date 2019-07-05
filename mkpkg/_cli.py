@@ -483,7 +483,7 @@ def main(
             if err.errno != errno.EEXIST:
                 raise
 
-        with open(path, "wb") as file:
+        with open(path, "w") as file:
             file.write(dedented(content))
 
     if docs:
