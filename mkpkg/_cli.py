@@ -1,7 +1,6 @@
 #! /usr/bin/env python2
 
 import ConfigParser
-import argparse
 import datetime
 import errno
 import io
@@ -141,19 +140,6 @@ def main(
     def package(*segments):
         return os.path.join(package_name, *segments)
 
-    def template(*segments):
-        path = os.path.join(os.path.dirname(__file__), "template", *segments)
-        with open(path) as f:
-            return f.read()
-
-    def render(*segments, **values):
-        segments = segments[:-1] + (segments[-1] + ".j2",)
-        return jinja2.Template(
-            template(*segments),
-            undefined=jinja2.StrictUndefined,
-            keep_trailing_newline=True,
-        ).render(values)
-
     def _script(name):
         return """
         import click
@@ -246,26 +232,6 @@ def main(
         test_runner = "trial"
         test_deps = ["twisted"]
 
-
-    def ini(*sections, **kwargs):
-        """
-        Construct an INI-formatted str with the given contents.
-        """
-
-        lol_python = io.BytesIO()
-        kwargs["defaults"] = dict(kwargs.pop("defaults", {}))
-        parser = ConfigParser.SafeConfigParser(**kwargs)
-        for section, contents in sections:
-            parser.add_section(section)
-            for option, value in contents:
-                if isinstance(value, list):
-                    value = "\n" + "\n".join(value)
-                parser.set(section, option, value)
-        parser.write(lol_python)
-        value = lol_python.getvalue().replace("\t", "    ").replace("= \n", "=\n")
-        return value[:-1]
-
-
     def classifiers(supports=supports, closed=closed):
         supports = sorted(supports)
 
@@ -301,13 +267,11 @@ def main(
         if "jython" in supports:
             yield "Programming Language :: Python :: Implementation :: Jython"
 
-
     tox_envlist = sorted(supports) + ["readme", "safety"]
     if style:
         tox_envlist.append("style")
     if docs:
         tox_envlist.append("docs-{html,doctest,linkcheck,spelling,style}")
-
 
     tox_sections = [
         (
@@ -329,7 +293,7 @@ def main(
                 (
                     "deps", test_deps + [
                         "" if closed else "codecov," + "coverage: coverage",
-                    ]
+                    ],
                 ),
             ],
         ), (
@@ -397,7 +361,7 @@ def main(
                         ), (
                             "deps", [
                                 "-r{toxinidir}/docs/requirements.txt",
-                                "{toxinidir}"
+                                "{toxinidir}",
                             ],
                         ),
                     ],
@@ -415,7 +379,6 @@ def main(
                 ),
             ],
         )
-
 
     if closed:
         license = "All rights reserved.\n"
@@ -446,7 +409,6 @@ def main(
             ),
         )
 
-
     setup_sections = [
         (
             "metadata", [
@@ -472,7 +434,7 @@ def main(
             ] + (
                 [("install_requires", ["click"])] if console_scripts else []
             ),
-        )
+        ),
     ] + (
         [("options.entry_points", [("console_scripts", console_scripts)])]
         if console_scripts
@@ -480,7 +442,6 @@ def main(
     ) + [
         ("flake8", [("exclude", package_name + "/__init__.py")]),
     ]
-
 
     heading = """
     {bar}
@@ -589,3 +550,37 @@ def main(
         subprocess.check_call(
             ["git", "--git-dir", git_dir, "commit", "-m", "Initial commit"],
         )
+
+
+def ini(*sections, **kwargs):
+    """
+    Construct an INI-formatted str with the given contents.
+    """
+
+    lol_python = io.BytesIO()
+    kwargs["defaults"] = dict(kwargs.pop("defaults", {}))
+    parser = ConfigParser.SafeConfigParser(**kwargs)
+    for section, contents in sections:
+        parser.add_section(section)
+        for option, value in contents:
+            if isinstance(value, list):
+                value = "\n" + "\n".join(value)
+            parser.set(section, option, value)
+    parser.write(lol_python)
+    value = lol_python.getvalue().replace("\t", "    ").replace("= \n", "=\n")
+    return value[:-1]
+
+
+def template(*segments):
+    path = os.path.join(os.path.dirname(__file__), "template", *segments)
+    with open(path) as f:
+        return f.read()
+
+
+def render(*segments, **values):
+    segments = segments[:-1] + (segments[-1] + ".j2",)
+    return jinja2.Template(
+        template(*segments),
+        undefined=jinja2.StrictUndefined,
+        keep_trailing_newline=True,
+    ).render(values)
