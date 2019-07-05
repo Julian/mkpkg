@@ -11,6 +11,8 @@ import sys
 import subprocess
 import textwrap
 
+import jinja2
+
 
 STATUS_CLASSIFIERS = {
     "planning": "Development Status :: 1 - Planning",
@@ -125,6 +127,14 @@ def main():
         path = os.path.join(os.path.dirname(__file__), "template", *segments)
         with open(path) as f:
             return f.read()
+
+    def render(*segments, **values):
+        segments = segments[:-1] + (segments[-1] + ".j2",)
+        return jinja2.Template(
+            template(*segments),
+            undefined=jinja2.StrictUndefined,
+            keep_trailing_newline=True,
+        ).render(values)
 
     def _script(name):
         return """
@@ -476,12 +486,7 @@ def main():
         root("MANIFEST.in"): template("MANIFEST.in"),
         root("setup.cfg"): ini(*setup_sections),
         root("setup.py"): template("setup.py"),
-        root(".coveragerc"): """
-            # vim: filetype=dosini:
-            [run]
-            branch = True
-            source = {package_name}
-        """.format(package_name=package_name),
+        root(".coveragerc"): render(".coveragerc", package_name=package_name),
         root("tox.ini"): ini(*tox_sections),
         root(".testr.conf"): template(".testr.conf"),
     }
