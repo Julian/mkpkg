@@ -539,7 +539,6 @@ def ini(*sections, **kwargs):
     """
 
     lol_python = io.BytesIO()
-    kwargs["defaults"] = dict(kwargs.pop("defaults", {}))
     parser = ConfigParser.SafeConfigParser(**kwargs)
     for section, contents in sections:
         parser.add_section(section)
