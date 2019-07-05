@@ -14,7 +14,7 @@ class TestMkpkg(TestCase):
     def test_it_creates_packages_that_pass_their_own_initial_tests(self):
         root = self.mkpkg("foo")
         subprocess.check_call(
-            [sys.executable, "-m", "tox"],
+            [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
             cwd=str(root / "foo"),
         )
 
