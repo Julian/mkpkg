@@ -219,41 +219,6 @@ def main(
         test_runner = "trial"
         test_deps = ["twisted"]
 
-    def classifiers(supports=supports, closed=closed):
-        supports = sorted(supports)
-
-        yield STATUS_CLASSIFIERS[status]
-
-        for classifier in (
-            "Operating System :: OS Independent",
-            "Programming Language :: Python",
-        ):
-            yield classifier
-
-        if not closed:
-            yield "License :: OSI Approved :: MIT License"
-
-        for version in supports:
-            if version in VERSION_CLASSIFIERS:
-                yield VERSION_CLASSIFIERS[version]
-
-        if any(
-            version.startswith("py2") or version in {"jython", "pypy"}
-            for version in supports
-        ):
-            yield "Programming Language :: Python :: 2"
-
-        if any(version.startswith("py3") for version in supports):
-            yield "Programming Language :: Python :: 3"
-
-        yield "Programming Language :: Python :: Implementation :: CPython"
-
-        if "pypy" in supports:
-            yield "Programming Language :: Python :: Implementation :: PyPy"
-
-        if "jython" in supports:
-            yield "Programming Language :: Python :: Implementation :: Jython"
-
     tox_envlist = sorted(supports) + [u"readme", u"safety"]
     if style:
         tox_envlist.append(u"style")
@@ -408,7 +373,15 @@ def main(
                         u"Julian+" + package_name + u"@GrayVines.com"
                     ),
                 ),
-                (u"classifiers", list(classifiers())),
+                (
+                    u"classifiers", list(
+                        classifiers(
+                            supports=supports,
+                            closed=closed,
+                            status=status,
+                        ),
+                    ),
+                ),
             ],
         ), (
             u"options", [
@@ -549,6 +522,42 @@ def ini(*sections, **kwargs):
     parser.write(lol_python)
     value = lol_python.getvalue().replace(u"\t", u"    ").replace(u"= \n", u"=\n")
     return value[:-1]
+
+
+def classifiers(supports, closed, status):
+    supports = sorted(supports)
+
+    yield STATUS_CLASSIFIERS[status]
+
+    for classifier in (
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+    ):
+        yield classifier
+
+    if not closed:
+        yield "License :: OSI Approved :: MIT License"
+
+    for version in supports:
+        if version in VERSION_CLASSIFIERS:
+            yield VERSION_CLASSIFIERS[version]
+
+    if any(
+        version.startswith("py2") or version in {"jython", "pypy"}
+        for version in supports
+    ):
+        yield "Programming Language :: Python :: 2"
+
+    if any(version.startswith("py3") for version in supports):
+        yield "Programming Language :: Python :: 3"
+
+    yield "Programming Language :: Python :: Implementation :: CPython"
+
+    if "pypy" in supports:
+        yield "Programming Language :: Python :: Implementation :: PyPy"
+
+    if "jython" in supports:
+        yield "Programming Language :: Python :: Implementation :: Jython"
 
 
 def template(*segments):
