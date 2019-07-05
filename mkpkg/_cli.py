@@ -11,6 +11,7 @@ import sys
 import subprocess
 import textwrap
 
+import click
 import jinja2
 
 
@@ -37,86 +38,103 @@ def dedented(*args, **kwargs):
     return textwrap.dedent(*args, **kwargs).lstrip("\n")
 
 
-parser = argparse.ArgumentParser(
-    description="Oh how exciting! Create a new Python package.",
-)
-parser.add_argument("name", help="the package name")
-parser.add_argument(
-    "--single", "--no-package",
-    action="store_true",
-    dest="single_module",
-    help="create a single module rather than a package",
-)
-parser.add_argument(
-    "-B", "--bare",
-    action="store_true",
-    help="only create the core source files",
-)
-parser.add_argument(
+@click.command()
+@click.argument("name")
+@click.option(
     "--author",
     default=pwd.getpwuid(os.getuid()).pw_gecos.partition(",")[0],
     help="the name of the package author",
 )
-parser.add_argument(
+@click.option(
     "--author-email",
     default=None,
     help="the package author's email",
 )
-parser.add_argument(
-    "--status",
-    choices=STATUS_CLASSIFIERS,
-    default="alpha",
-    help="the initial package development status",
-)
-parser.add_argument(
-    "-S", "--no-style",
-    action="store_false",
-    dest="style",
-    help="Don't run pyflakes by default in tox runs.",
-)
-parser.add_argument(
-    "-V", "--no-sensibility",
-    action="store_false",
-    dest="sensible",
-    help="Don't initialize a VCS.",
-)
-parser.add_argument(
-    "-c", "--cli",
-    action="append",
+@click.option(
+    "-c",
+    "--cli",
+    multiple=True,
     help="include a CLI in the resulting package with the given name",
-    default=[],
 )
-parser.add_argument(
-    "-s", "--supports",
-    action="append",
-    help="a version of Python supported by the package",
-    choices=sorted(VERSION_CLASSIFIERS) + ["jython", "pypy"],
-    default=["py27", "py36", "py37", "pypy"],
-)
-parser.add_argument(
-    "-t", "--test-runner",
-    help="the test runner to use",
-    choices=["pytest", "trial"],
-    default="trial",
-)
-parser.add_argument(
-    "--closed",
-    action="store_true",
-    help="A closed source package.",
-)
-parser.add_argument(
+@click.option(
     "--readme",
     default="",
     help="a (rst) README for the package",
 )
-parser.add_argument(
-    "--docs", "--no-docs",
-    action="store_true",
+@click.option(
+    "-t",
+    "--test-runner",
+    default="trial",
+    type=click.Choice(["pytest", "trial"]),
+    help="the test runner to use",
+)
+@click.option(
+    "-s",
+    "--supports",
+    multiple=True,
+    type=click.Choice(sorted(VERSION_CLASSIFIERS) + ["jython", "pypy"]),
+    default=["py27", "py36", "py37", "pypy"],
+    help="a version of Python supported by the package",
+)
+@click.option(
+    "--status",
+    type=click.Choice(STATUS_CLASSIFIERS),
+    default="alpha",
+    help="the initial package development status",
+)
+@click.option(
+    "--docs/--no-docs",
+    default=False,
     help="generate a Sphinx documentation template for the new package",
 )
+@click.option(
+    "--single",
+    "--no-package",
+    "single_module",
+    is_flag=True,
+    default=False,
+    help="create a single module rather than a package.",
+)
+@click.option(
+    "--bare/--no-bare",
+    "bare",
+    default=False,
+    help="only create the core source files.",
+)
+@click.option(
+    "--no-style/--style",
+    "style",
+    default=True,
+    help="don't run pyflakes by default in tox runs.",
+)
+@click.option(
+    "--no-sensibility",
+    "sensible",
+    default=True,
+    is_flag=True,
+    help="don't initialize a VCS.",
+)
+@click.option("--closed", help="Create a closed source package.")
+def main(
+    name,
+    author,
+    author_email,
+    cli,
+    readme,
+    test_runner,
+    supports,
+    status,
+    docs,
+    single_module,
+    bare,
+    style,
+    sensible,
+    closed,
+):
+    """
+    Oh how exciting! Create a new Python package.
+    """
 
-
-def main():
     def root(*segments):
         return os.path.join(name, *segments)
 
@@ -149,24 +167,21 @@ def main():
             pass
         """.format(package_name)
 
-    arguments = parser.parse_args()
-    name = arguments.name
-
     if name.startswith("python-"):
         package_name = name[len("python-"):]
     else:
         package_name = name
     package_name = package_name.lower().replace("-", "_")
 
-    if arguments.single_module:
+    if single_module:
         contents = "py_modules", name
         tests = "tests.py"
 
-        if len(arguments.cli) > 1:
+        if len(cli) > 1:
             sys.exit("Cannot create a single module with multiple CLIs.")
-        elif arguments.cli:
+        elif cli:
             console_scripts = [
-                "{} = {}:main".format(arguments.cli[0], package_name),
+                "{} = {}:main".format(cli[0], package_name),
             ]
             script = """
             import click
@@ -208,28 +223,26 @@ def main():
             """.format(name=package_name),
         }
 
-        if len(arguments.cli) == 1:
+        if len(cli) == 1:
             console_scripts = [
-                "{} = {}._cli:main".format(arguments.cli[0], package_name),
+                "{} = {}._cli:main".format(cli[0], package_name),
             ]
-            core_source_paths[package("_cli.py")] = _script(
-                name=arguments.cli[0]
-            )
+            core_source_paths[package("_cli.py")] = _script(name=cli[0])
         else:
             console_scripts = [
                 "{each} = {package_name}._{each}:main".format(
                     each=each, package_name=package_name,
-                ) for each in arguments.cli
+                ) for each in cli
             ]
             core_source_paths.update(
                 (package("_" + each + ".py"), _script(name=each))
-                for each in arguments.cli
+                for each in cli
             )
 
-    if arguments.test_runner == "pytest":
+    if test_runner == "pytest":
         test_runner = "py.test"
         test_deps = ["pytest"]
-    elif arguments.test_runner == "trial":
+    elif test_runner == "trial":
         test_runner = "trial"
         test_deps = ["twisted"]
 
@@ -253,10 +266,10 @@ def main():
         return value[:-1]
 
 
-    def classifiers(supports=arguments.supports, closed=arguments.closed):
+    def classifiers(supports=supports, closed=closed):
         supports = sorted(supports)
 
-        yield STATUS_CLASSIFIERS[arguments.status]
+        yield STATUS_CLASSIFIERS[status]
 
         for classifier in (
             "Operating System :: OS Independent",
@@ -264,7 +277,7 @@ def main():
         ):
             yield classifier
 
-        if not arguments.closed:
+        if not closed:
             yield "License :: OSI Approved :: MIT License"
 
         for version in supports:
@@ -289,10 +302,10 @@ def main():
             yield "Programming Language :: Python :: Implementation :: Jython"
 
 
-    tox_envlist = sorted(arguments.supports) + ["readme", "safety"]
-    if arguments.style:
+    tox_envlist = sorted(supports) + ["readme", "safety"]
+    if style:
         tox_envlist.append("style")
-    if arguments.docs:
+    if docs:
         tox_envlist.append("docs-{html,doctest,linkcheck,spelling,style}")
 
 
@@ -315,7 +328,7 @@ def main():
                 ),
                 (
                     "deps", test_deps + [
-                        "" if arguments.closed else "codecov," + "coverage: coverage",
+                        "" if closed else "codecov," + "coverage: coverage",
                     ]
                 ),
             ],
@@ -367,7 +380,7 @@ def main():
         ),
     ]
 
-    if arguments.docs:
+    if docs:
         tox_sections.extend(
             [
                 (
@@ -404,7 +417,7 @@ def main():
         )
 
 
-    if arguments.closed:
+    if closed:
         license = "All rights reserved.\n"
     else:
         license = template("COPYING")
@@ -443,10 +456,10 @@ def main():
                 ("description", ""),
                 ("long_description", "file: README.rst"),
 
-                ("author", arguments.author),
+                ("author", author),
                 (
                     "author_email", (
-                        arguments.author_email or
+                        author_email or
                         "Julian+" + package_name + "@GrayVines.com"
                     ),
                 ),
@@ -474,13 +487,13 @@ def main():
     {name}
     {bar}
     """.format(bar="=" * len(name), name=name)
-    README = heading + "" if not arguments.readme else "\n" + arguments.readme
+    README = heading + "" if not readme else "\n" + readme
 
     files = {
         root("README.rst"): README,
         root("COPYING"): (
             "Copyright (c) {now.year} {author}\n\n".format(
-                now=datetime.datetime.now(), author=arguments.author,
+                now=datetime.datetime.now(), author=author,
             ) + license
         ),
         root("MANIFEST.in"): template("MANIFEST.in"),
@@ -491,12 +504,12 @@ def main():
         root(".testr.conf"): template(".testr.conf"),
     }
 
-    if arguments.docs:
+    if docs:
         files[root("docs", "requirements.txt")] = template(
             "docs", "requirements.txt",
         )
 
-    if not arguments.closed:
+    if not closed:
         files.update(
             {
                 # FIXME: Generate this based on supported versions
@@ -505,7 +518,7 @@ def main():
             },
         )
 
-    if arguments.bare:
+    if bare:
         targets = core_source_paths
     else:
         files.update(
@@ -531,13 +544,13 @@ def main():
         with open(path, "wb") as file:
             file.write(dedented(content))
 
-    if arguments.docs:
+    if docs:
         subprocess.check_call(
             [
                 "sphinx-quickstart",
                 "--quiet",
                 "--project", name,
-                "--author", arguments.author,
+                "--author", author,
                 "--release", "",
                 "--ext-autodoc",
                 "--ext-coverage",
@@ -567,7 +580,7 @@ def main():
                 ),
             )
 
-    if arguments.sensible and not arguments.bare:
+    if sensible and not bare:
         subprocess.check_call(["git", "init", name])
 
         git_dir = root(".git")
