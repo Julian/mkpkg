@@ -1,7 +1,7 @@
 #! /usr/bin/env python2
 
+from datetime import datetime
 import ConfigParser
-import datetime
 import errno
 import io
 import os
@@ -378,11 +378,7 @@ def main(
             ],
         )
 
-    if closed:
-        license = "All rights reserved.\n"
-    else:
-        license = template("COPYING")
-
+    if not closed:
         tox_sections.append(
             (
                 "testenv:codecov", [
@@ -450,10 +446,8 @@ def main(
 
     files = {
         root("README.rst"): README,
-        root("COPYING"): (
-            "Copyright (c) {now.year} {author}\n\n".format(
-                now=datetime.datetime.now(), author=author,
-            ) + license
+        root("COPYING"): render(
+            "COPYING", now=datetime.now(), author=author, closed=closed,
         ),
         root("MANIFEST.in"): template("MANIFEST.in"),
         root("setup.cfg"): ini(*setup_sections),
