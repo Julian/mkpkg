@@ -113,7 +113,11 @@ def dedented(*args, **kwargs):
     is_flag=True,
     help="don't initialize a VCS.",
 )
-@click.option("--closed", help="Create a closed source package.")
+@click.option(
+    "--closed/--open",
+    default=False,
+    help="create a closed source package.",
+)
 def main(
     name,
     author,
