@@ -495,41 +495,8 @@ def main():
         files.update(
             {
                 # FIXME: Generate this based on supported versions
-                root(".travis.yml"): """
-                    sudo: false
-                    dist: xenial
-                    language: python
-
-                    python:
-                    - 2.7
-                    - 3.5
-                    - 3.6
-                    - 3.7
-                    - pypy2.7-6.0
-                    - pypy3.5-6.0
-
-                    install:
-                    - pip install tox-travis
-
-                    script:
-                    - tox
-
-                    after_success:
-                    - tox -e codecov
-                """,
-                root("codecov.yml"): """
-                    coverage:
-                    precision: 2
-                    round: down
-                    status:
-                        patch:
-                        default:
-                            target: 100%
-
-                    comment:
-                    layout: "header, diff, uncovered"
-                    behavior: default
-                """,
+                root(".travis.yml"): template(".travis.yml"),
+                root("codecov.yml"): template("codecov.yml"),
             },
         )
 
