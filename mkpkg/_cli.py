@@ -144,19 +144,6 @@ def main(
     def package(*segments):
         return os.path.join(package_name, *segments)
 
-    def _script(name):
-        return """
-        import click
-
-        from {} import __version__
-
-
-        @click.command()
-        @click.version_option(version=__version__)
-        def main():
-            pass
-        """.format(package_name)
-
     if name.startswith("python-"):
         package_name = name[len("python-"):]
     else:
@@ -170,9 +157,7 @@ def main(
         if len(cli) > 1:
             sys.exit("Cannot create a single module with multiple CLIs.")
         elif cli:
-            console_scripts = [
-                "{} = {}:main".format(cli[0], package_name),
-            ]
+            console_scripts = ["{} = {}:main".format(cli[0], package_name)]
             script = """
             import click
 
@@ -211,7 +196,9 @@ def main(
             console_scripts = [
                 "{} = {}._cli:main".format(cli[0], package_name),
             ]
-            core_source_paths[package("_cli.py")] = _script(name=cli[0])
+            core_source_paths[package("_cli.py")] = render(
+                "package", "_cli.py", package_name=package_name,
+            )
         else:
             console_scripts = [
                 "{each} = {package_name}._{each}:main".format(
@@ -219,8 +206,10 @@ def main(
                 ) for each in cli
             ]
             core_source_paths.update(
-                (package("_" + each + ".py"), _script(name=each))
-                for each in cli
+                (
+                    package("_" + each + ".py"),
+                    render("package", "_cli.py", package_name=package_name),
+                ) for each in cli
             )
 
     if test_runner == "pytest":
