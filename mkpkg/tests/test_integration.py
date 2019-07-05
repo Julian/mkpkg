@@ -18,6 +18,13 @@ class TestMkpkg(TestCase):
             cwd=str(root / "foo"),
         )
 
+    def test_it_creates_single_modules_that_pass_their_own_initial_tests(self):
+        root = self.mkpkg("foo", "--single")
+        subprocess.check_call(
+            [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
+            cwd=str(root / "foo"),
+        )
+
     def mkpkg(self, *argv):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)
