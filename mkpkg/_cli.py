@@ -2,7 +2,6 @@
 
 from datetime import datetime
 import configparser
-import errno
 import io
 import os
 import pwd
