@@ -24,12 +24,17 @@ STATUS_CLASSIFIERS = {
     "inactive": "Development Status :: 7 - Inactive",
 }
 VERSION_CLASSIFIERS = {
+    "pypy": "Programming Language :: Python :: 2.7",
+    "pypy3": "Programming Language :: Python :: 3.6",
+
     "py27": "Programming Language :: Python :: 2.7",
     "py35": "Programming Language :: Python :: 3.5",
     "py36": "Programming Language :: Python :: 3.6",
     "py37": "Programming Language :: Python :: 3.7",
     "py38": "Programming Language :: Python :: 3.8",
     "py39": "Programming Language :: Python :: 3.9",
+
+    "jython": "Programming Language :: Python :: 2.7",
 }
 
 
@@ -71,9 +76,7 @@ def dedented(*args, **kwargs):
     "-s",
     "--supports",
     multiple=True,
-    type=click.Choice(
-        sorted(VERSION_CLASSIFIERS) + ["jython", "pypy", "pypy3"],
-    ),
+    type=click.Choice(sorted(VERSION_CLASSIFIERS)),
     default=["py36", "py37", "pypy", "pypy3"],
     help="a version of Python supported by the package",
 )
@@ -376,13 +379,33 @@ def main(
                     ),
                 ),
                 (
-                    u"classifiers", list(
-                        classifiers(
-                            supports=supports,
-                            closed=closed,
-                            status=status,
+                    u"classifiers", render(
+                        "setup.cfg",
+                        status_classifier=STATUS_CLASSIFIERS[status],
+                        version_classifiers={
+                            VERSION_CLASSIFIERS[each]
+                            for each in supports
+                            if each in VERSION_CLASSIFIERS
+                        },
+                        closed=closed,
+                        supports=supports,
+                        py2=any(
+                            version.startswith("py2")
+                            or version in {"jython", "pypy"}
+                            for version in supports
                         ),
-                    ),
+                        py3=any(
+                            version.startswith("py3")
+                            or version == "pypy3"
+                            for version in supports
+                        ),
+                        cpython=any(
+                            version not in {"jython", "pypy", "pypy3"}
+                            for version in supports
+                        ),
+                        pypy="pypy" in supports or "pypy3" in supports,
+                        jython="jython" in supports,
+                    ).splitlines(),
                 ),
             ],
         ), (
@@ -524,42 +547,6 @@ def ini(*sections, **kwargs):
     parser.write(lol_python)
     value = lol_python.getvalue().replace(u"\t", u"    ").replace(u"= \n", u"=\n")
     return value[:-1]
-
-
-def classifiers(supports, closed, status):
-    supports = sorted(supports)
-
-    yield STATUS_CLASSIFIERS[status]
-
-    for classifier in (
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-    ):
-        yield classifier
-
-    if not closed:
-        yield "License :: OSI Approved :: MIT License"
-
-    for version in supports:
-        if version in VERSION_CLASSIFIERS:
-            yield VERSION_CLASSIFIERS[version]
-
-    if any(
-        version.startswith("py2") or version in {"jython", "pypy"}
-        for version in supports
-    ):
-        yield "Programming Language :: Python :: 2"
-
-    if any(version.startswith("py3") for version in supports):
-        yield "Programming Language :: Python :: 3"
-
-    yield "Programming Language :: Python :: Implementation :: CPython"
-
-    if "pypy" in supports:
-        yield "Programming Language :: Python :: Implementation :: PyPy"
-
-    if "jython" in supports:
-        yield "Programming Language :: Python :: Implementation :: Jython"
 
 
 def template(*segments):

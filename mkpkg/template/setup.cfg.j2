@@ -1,0 +1,24 @@
+{{ status_classifier }}
+Operating System :: OS Independent
+Programming Language :: Python
+{% if not closed -%}
+License :: OSI Approved :: MIT License
+{% endif -%}
+{% for each in version_classifiers | sort -%}
+    {{ each }}
+{% endfor -%}
+{% if py2 -%}
+Programming Language :: Python :: 2
+{% endif -%}
+{% if py3 -%}
+Programming Language :: Python :: 3
+{% endif -%}
+{% if cpython -%}
+Programming Language :: Python :: Implementation :: CPython
+{% endif -%}
+{% if pypy -%}
+Programming Language :: Python :: Implementation :: PyPy
+{% endif -%}
+{% if jython -%}
+Programming Language :: Python :: Implementation :: Jython
+{% endif -%}
