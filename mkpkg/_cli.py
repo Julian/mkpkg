@@ -539,9 +539,8 @@ def ini(*sections, **kwargs):
 
 
 def template(*segments):
-    path = os.path.join(os.path.dirname(__file__), "template", *segments)
-    with io.open(path, "r") as f:
-        return f.read()
+    path = Path(__file__).with_name("template").joinpath(*segments)
+    return path.read_text()
 
 
 def render(*segments, **values):
