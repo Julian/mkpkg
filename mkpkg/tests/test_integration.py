@@ -1,9 +1,7 @@
 try:
     from tempfile import TemporaryDirectory
-    from pathlib import Path
 except Exception:
     from backports.tempfile import TemporaryDirectory
-    from pathlib2 import Path
 
 from unittest import TestCase
 import subprocess

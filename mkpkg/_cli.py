@@ -10,6 +10,11 @@ import sys
 import subprocess
 import textwrap
 
+try:
+    from pathlib import Path
+except ImportError:
+    from pathlib2 import Path
+
 import click
 import jinja2
 
@@ -143,8 +148,7 @@ def main(
     Oh how exciting! Create a new Python package.
     """
 
-    def root(*segments):
-        return os.path.join(name, *segments)
+    root = Path(name)
 
     def package(*segments):
         return os.path.join(package_name, *segments)
@@ -163,7 +167,7 @@ def main(
             sys.exit("Cannot create a single module with multiple CLIs.")
         elif cli:
             console_scripts = [u"{} = {}:main".format(cli[0], package_name)]
-            script = """
+            script = u"""
             import click
 
 
@@ -173,11 +177,11 @@ def main(
             """
         else:
             console_scripts = []
-            script = ""
+            script = u""
 
         core_source_paths = {
             package_name + ".py": script,
-            "tests.py": """
+            "tests.py": u"""
             from unittest import TestCase
 
             import {package_name}
@@ -193,7 +197,7 @@ def main(
         tests = package_name
 
         core_source_paths = {
-            package("tests", "__init__.py"): "",
+            package("tests", "__init__.py"): u"",
             package("__init__.py"): template("package", "__init__.py"),
         }
 
@@ -424,28 +428,28 @@ def main(
         (u"flake8", [(u"exclude", package_name + u"/__init__.py")]),
     ]
 
-    heading = """
+    heading = u"""
     {bar}
     {name}
     {bar}
-    """.format(bar="=" * len(name), name=name)
-    README = heading + "" if not readme else "\n" + readme
+    """.format(bar=u"=" * len(name), name=name)
+    README = heading + u"" if not readme else u"\n" + readme
 
     files = {
-        root("README.rst"): README,
-        root("COPYING"): render(
+        root / "README.rst": README,
+        root / "COPYING": render(
             "COPYING", now=datetime.now(), author=author, closed=closed,
         ),
-        root("MANIFEST.in"): template("MANIFEST.in"),
-        root("setup.cfg"): ini(*setup_sections),
-        root("setup.py"): template("setup.py"),
-        root(".coveragerc"): render(".coveragerc", package_name=package_name),
-        root("tox.ini"): ini(*tox_sections),
-        root(".testr.conf"): template(".testr.conf"),
+        root / "MANIFEST.in": template("MANIFEST.in"),
+        root / "setup.cfg": ini(*setup_sections),
+        root / "setup.py": template("setup.py"),
+        root / ".coveragerc": render(".coveragerc", package_name=package_name),
+        root / "tox.ini": ini(*tox_sections),
+        root / ".testr.conf": template(".testr.conf"),
     }
 
     if docs:
-        files[root("docs", "requirements.txt")] = template(
+        files[root / "docs" / "requirements.txt"] = template(
             "docs", "requirements.txt",
         )
 
@@ -453,8 +457,8 @@ def main(
         files.update(
             {
                 # FIXME: Generate this based on supported versions
-                root(".travis.yml"): template(".travis.yml"),
-                root("codecov.yml"): template("codecov.yml"),
+                root / ".travis.yml": template(".travis.yml"),
+                root / "codecov.yml": template("codecov.yml"),
             },
         )
 
@@ -462,7 +466,7 @@ def main(
         targets = core_source_paths
     else:
         files.update(
-            (root(path), content)
+            (root / path, content)
             for path, content in core_source_paths.items()
         )
         targets = files
@@ -475,14 +479,8 @@ def main(
             raise
 
     for path, content in targets.items():
-        try:
-            os.makedirs(os.path.dirname(os.path.abspath(path)))
-        except OSError as err:
-            if err.errno != errno.EEXIST:
-                raise
-
-        with open(path, "w") as file:
-            file.write(dedented(content))
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(dedented(content))
 
     if docs:
         subprocess.check_call(
@@ -504,12 +502,12 @@ def main(
                 os.path.join(name, "docs"),
             ],
         )
-        with open(root("docs", "index.rst"), "w") as index:
+        with io.open(root / "docs" / "index.rst", "w") as index:
             index.write(README)
-            index.write("\n\n")
+            index.write(u"\n\n")
             index.write(
                 dedented(
-                    """
+                    u"""
                     Contents
                     --------
 
@@ -523,11 +521,11 @@ def main(
     if sensible and not bare:
         subprocess.check_call(["git", "init", name])
 
-        git_dir = root(".git")
+        git_dir = root / ".git"
         subprocess.check_call(
-            ["git", "--git-dir", git_dir, "--work-tree", name, "add", "COPYING"])
+            ["git", "--git-dir", str(git_dir), "--work-tree", name, "add", "COPYING"])
         subprocess.check_call(
-            ["git", "--git-dir", git_dir, "commit", "-m", "Initial commit"],
+            ["git", "--git-dir", str(git_dir), "commit", "-m", "Initial commit"],
         )
 
 
@@ -551,7 +549,7 @@ def ini(*sections, **kwargs):
 
 def template(*segments):
     path = os.path.join(os.path.dirname(__file__), "template", *segments)
-    with open(path) as f:
+    with io.open(path, "r") as f:
         return f.read()
 
 
