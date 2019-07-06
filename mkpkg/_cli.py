@@ -426,11 +426,13 @@ def main(
         (u"flake8", [(u"exclude", package_name + u"/__init__.py")]),
     ]
 
-    heading = u"""
-    {bar}
-    {name}
-    {bar}
-    """.format(bar=u"=" * len(name), name=name)
+    heading = dedented(
+        u"""
+        {bar}
+        {name}
+        {bar}
+        """.format(bar=u"=" * len(name), name=name),
+    )
     README = heading + u"" if not readme else u"\n" + readme
 
     files = {
@@ -468,13 +470,7 @@ def main(
             for path, content in core_source_paths.items()
         )
         targets = files
-
-        try:
-            os.mkdir(name)
-        except OSError as err:
-            if err.errno == errno.EEXIST:
-                sys.exit("{0} already exists!".format(name))
-            raise
+        root.mkdir()
 
     for path, content in targets.items():
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -497,24 +493,21 @@ def main(
                 "--extensions", "sphinxcontrib.spelling",
                 "--makefile",
                 "--no-batchfile",
-                os.path.join(name, "docs"),
+                str(root / "docs"),
             ],
         )
-        with io.open(root / "docs" / "index.rst", "w") as index:
-            index.write(README)
-            index.write(u"\n\n")
-            index.write(
-                dedented(
-                    u"""
-                    Contents
-                    --------
+        (root / "docs" / "index.rst").write_text(
+            README + u"\n\n" + dedented(
+                u"""
+                Contents
+                --------
 
-                    .. toctree::
-                        :glob:
-                        :maxdepth: 2
-                    """,
-                ),
-            )
+                .. toctree::
+                    :glob:
+                    :maxdepth: 2
+                """,
+            ),
+        )
 
     if sensible and not bare:
         subprocess.check_call(["git", "init", name])
