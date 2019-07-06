@@ -7,6 +7,8 @@ from unittest import TestCase
 import subprocess
 import sys
 
+from mkpkg._cli import Path
+
 
 class TestMkpkg(TestCase):
     def test_it_creates_packages_that_pass_their_own_initial_tests(self):
