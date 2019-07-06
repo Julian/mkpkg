@@ -148,16 +148,14 @@ def main(
     Oh how exciting! Create a new Python package.
     """
 
-    root = Path(name)
-
-    def package(*segments):
-        return os.path.join(package_name, *segments)
-
     if name.startswith("python-"):
         package_name = name[len("python-"):]
     else:
         package_name = name
     package_name = package_name.lower().replace("-", "_")
+
+    root = Path(name)
+    package = Path(package_name)
 
     if single_module:
         contents = u"py_modules", name
@@ -197,15 +195,15 @@ def main(
         tests = package_name
 
         core_source_paths = {
-            package("tests", "__init__.py"): u"",
-            package("__init__.py"): template("package", "__init__.py"),
+            package / "tests" / "__init__.py": u"",
+            package / "__init__.py": template("package", "__init__.py"),
         }
 
         if len(cli) == 1:
             console_scripts = [
                 "{} = {}._cli:main".format(cli[0], package_name),
             ]
-            core_source_paths[package("_cli.py")] = render(
+            core_source_paths[package / "_cli.py"] = render(
                 "package", "_cli.py", package_name=package_name,
             )
         else:
@@ -216,7 +214,7 @@ def main(
             ]
             core_source_paths.update(
                 (
-                    package("_" + each + ".py"),
+                    package / "_" + each + ".py",
                     render("package", "_cli.py", package_name=package_name),
                 ) for each in cli
             )
