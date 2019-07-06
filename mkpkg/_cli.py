@@ -151,13 +151,13 @@ def main(
     package_name = package_name.lower().replace("-", "_")
 
     if single_module:
-        contents = "py_modules", name
-        tests = "tests.py"
+        contents = u"py_modules", name
+        tests = u"{toxinidir}/tests.py"
 
         if len(cli) > 1:
             sys.exit("Cannot create a single module with multiple CLIs.")
         elif cli:
-            console_scripts = ["{} = {}:main".format(cli[0], package_name)]
+            console_scripts = [u"{} = {}:main".format(cli[0], package_name)]
             script = """
             import click
 
@@ -184,7 +184,7 @@ def main(
         }
 
     else:
-        contents = "packages", "find:"
+        contents = u"packages", u"find:"
         tests = package_name
 
         core_source_paths = {
