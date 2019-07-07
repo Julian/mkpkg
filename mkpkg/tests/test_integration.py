@@ -29,6 +29,38 @@ class TestMkpkg(TestCase):
             cwd=str(root / "foo"),
         )
 
+    def test_it_creates_clis(self):
+        foo = self.mkpkg("foo", "--cli", "bar") / "bar"
+        cli = foo / "foo" / "_cli.py"
+        cli.write_text(
+            cli.read_text().replace(
+                "def main():\n    pass",
+                "def main():\n    click.echo('hello')",
+            ),
+        )
+        venv = self.venv(foo)
+        self.assertEqual(
+            subprocess.check_output([str(venv / "bin" / "bar")]),
+            "hello\n",
+        )
+
+    def test_it_creates_main_py_files_for_single_clis(self):
+        foo = self.mkpkg("foo", "--cli", "foo") / "foo"
+        cli = foo / "foo" / "_cli.py"
+        cli.write_text(
+            cli.read_text().replace(
+                "def main():\n    pass",
+                "def main():\n    click.echo('hello')",
+            ),
+        )
+        venv = self.venv(foo)
+        self.assertEqual(
+            subprocess.check_output(
+                [str(venv / "bin" / "python"), "-m", "foo"],
+            ),
+            "hello\n",
+        )
+
     def mkpkg(self, *argv):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)
@@ -43,3 +75,13 @@ class TestMkpkg(TestCase):
             ),
         )
         return Path(directory.name)
+
+    def venv(self, package):
+        venv = package / "venv"
+        subprocess.check_call(
+            [sys.executable, "-m", "virtualenv", str(venv)],
+        )
+        subprocess.check_call(
+            [str(venv / "bin"/ "python"), "-m", "pip", "install", str(package)]
+        )
+        return venv

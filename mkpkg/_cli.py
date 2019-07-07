@@ -205,6 +205,9 @@ def main(
             core_source_paths[package / "_cli.py"] = render(
                 "package", "_cli.py", package_name=package_name,
             )
+            core_source_paths[package / "__main__.py"] = render(
+                "package", "__main__.py", package_name=package_name,
+            )
         else:
             console_scripts = [
                 "{each} = {package_name}._{each}:main".format(
