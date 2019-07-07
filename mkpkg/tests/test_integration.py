@@ -61,6 +61,13 @@ class TestMkpkg(TestCase):
             b"hello\n",
         )
 
+    def test_program_names_are_correct(self):
+        venv = self.venv(self.mkpkg("foo", "--cli", "foo") / "foo")
+        version = subprocess.check_output(
+            [str(venv / "bin" / "python"), "-m", "foo", "--version"],
+        )
+        self.assertTrue(version.startswith("foo"))
+
     def mkpkg(self, *argv):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)

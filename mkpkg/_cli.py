@@ -203,7 +203,9 @@ def main(
                 "{} = {}._cli:main".format(cli[0], package_name),
             ]
             core_source_paths[package / "_cli.py"] = render(
-                "package", "_cli.py", package_name=package_name,
+                "package", "_cli.py",
+                package_name=package_name,
+                cli=cli[0],
             )
             core_source_paths[package / "__main__.py"] = render(
                 "package", "__main__.py", package_name=package_name,
@@ -217,7 +219,12 @@ def main(
             core_source_paths.update(
                 (
                     package / "_" + each + ".py",
-                    render("package", "_cli.py", package_name=package_name),
+                    render(
+                        "package",
+                        "_cli.py",
+                        package_name=package_name,
+                        cli=each,
+                    ),
                 ) for each in cli
             )
 
