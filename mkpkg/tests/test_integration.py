@@ -13,7 +13,7 @@ from mkpkg._cli import Path
 class TestMkpkg(TestCase):
     def test_it_creates_packages_that_pass_their_own_initial_tests(self):
         root = self.mkpkg("foo")
-        with open(str(root / "foo" / "README.rst"), "a") as readme:
+        with (root / "foo" / "README.rst").open("a") as readme:
             readme.write("Some description.\n")
         subprocess.check_call(
             [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
@@ -22,7 +22,7 @@ class TestMkpkg(TestCase):
 
     def test_it_creates_single_modules_that_pass_their_own_initial_tests(self):
         root = self.mkpkg("foo", "--single")
-        with open(str(root / "foo" / "README.rst"), "a") as readme:
+        with (root / "foo" / "README.rst").open("a") as readme:
             readme.write("Some description.\n")
         subprocess.check_call(
             [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
