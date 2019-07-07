@@ -41,7 +41,7 @@ class TestMkpkg(TestCase):
         venv = self.venv(foo)
         self.assertEqual(
             subprocess.check_output([str(venv / "bin" / "bar")]),
-            "hello\n",
+            b"hello\n",
         )
 
     def test_it_creates_main_py_files_for_single_clis(self):
@@ -58,7 +58,7 @@ class TestMkpkg(TestCase):
             subprocess.check_output(
                 [str(venv / "bin" / "python"), "-m", "foo"],
             ),
-            "hello\n",
+            b"hello\n",
         )
 
     def mkpkg(self, *argv):
