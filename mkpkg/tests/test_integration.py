@@ -30,7 +30,7 @@ class TestMkpkg(TestCase):
         )
 
     def test_it_creates_clis(self):
-        foo = self.mkpkg("foo", "--cli", "bar") / "bar"
+        foo = self.mkpkg("foo", "--cli", "bar") / "foo"
         cli = foo / "foo" / "_cli.py"
         cli.write_text(
             cli.read_text().replace(
