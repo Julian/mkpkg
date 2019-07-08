@@ -129,6 +129,10 @@ class TestMkpkg(TestCase):
             [sys.executable, "-m", "virtualenv", str(venv)],
         )
         subprocess.check_call(
-            [str(venv / "bin"/ "python"), "-m", "pip", "install", str(package)]
+            [
+                str(venv / "bin" / "python"), "-m", "pip",
+                "install",
+                str(package),
+            ]
         )
         return venv
