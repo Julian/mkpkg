@@ -92,6 +92,22 @@ class TestMkpkg(TestCase):
         )
         self.assertNotIn("style", envlist)
 
+    def test_it_initializes_a_vcs_by_default(self):
+        root = self.mkpkg("foo")
+        self.assertTrue((root / "foo" / ".git").is_dir())
+
+    def test_it_initializes_a_vcs_when_explicitly_asked(self):
+        root = self.mkpkg("foo", "--init-vcs")
+        self.assertTrue((root / "foo" / ".git").is_dir())
+
+    def test_it_skips_vcs_when_asked(self):
+        root = self.mkpkg("foo", "--no-init-vcs")
+        self.assertFalse((root / "foo" / ".git").is_dir())
+
+    def test_it_skips_vcs_when_bare(self):
+        root = self.mkpkg("foo", "--bare")
+        self.assertFalse((root / "foo" / ".git").is_dir())
+
     def mkpkg(self, *argv):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)

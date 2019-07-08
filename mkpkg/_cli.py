@@ -116,10 +116,8 @@ def dedented(*args, **kwargs):
     help="(don't) run pyflakes by default in tox runs.",
 )
 @click.option(
-    "--no-sensibility",
-    "sensible",
+    "--init-vcs/--no-init-vcs",
     default=True,
-    is_flag=True,
     help="don't initialize a VCS.",
 )
 @click.option(
@@ -140,7 +138,7 @@ def main(
     single_module,
     bare,
     style,
-    sensible,
+    init_vcs,
     closed,
 ):
     """
@@ -518,7 +516,7 @@ def main(
             ),
         )
 
-    if sensible and not bare:
+    if init_vcs and not bare:
         subprocess.check_call(["git", "init", name])
 
         git_dir = root / ".git"
