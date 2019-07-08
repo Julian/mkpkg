@@ -13,8 +13,8 @@ from mkpkg._cli import Path
 class TestMkpkg(TestCase):
     def test_it_creates_packages_that_pass_their_own_initial_tests(self):
         root = self.mkpkg("foo")
-        with (root / "foo" / "README.rst").open("a") as readme:
-            readme.write("Some description.\n")
+        with (root / "foo" / "README.rst").open("at") as readme:
+            readme.write(u"Some description.\n")
         subprocess.check_call(
             [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
             cwd=str(root / "foo"),
@@ -22,8 +22,8 @@ class TestMkpkg(TestCase):
 
     def test_it_creates_single_modules_that_pass_their_own_initial_tests(self):
         root = self.mkpkg("foo", "--single")
-        with (root / "foo" / "README.rst").open("a") as readme:
-            readme.write("Some description.\n")
+        with (root / "foo" / "README.rst").open("at") as readme:
+            readme.write(u"Some description.\n")
         subprocess.check_call(
             [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
             cwd=str(root / "foo"),
@@ -66,7 +66,7 @@ class TestMkpkg(TestCase):
         version = subprocess.check_output(
             [str(venv / "bin" / "python"), "-m", "foo", "--version"],
         )
-        self.assertTrue(version.startswith("foo"))
+        self.assertTrue(version.startswith(b"foo"))
 
     def test_it_runs_style_checks_by_default(self):
         root = self.mkpkg("foo")
@@ -74,7 +74,7 @@ class TestMkpkg(TestCase):
             [sys.executable, "-m", "tox", "-l"],
             cwd=str(root / "foo"),
         )
-        self.assertIn("style", envlist)
+        self.assertIn(b"style", envlist)
 
     def test_it_runs_style_checks_when_explicitly_asked(self):
         root = self.mkpkg("foo", "--style")
@@ -82,7 +82,7 @@ class TestMkpkg(TestCase):
             [sys.executable, "-m", "tox", "-l"],
             cwd=str(root / "foo"),
         )
-        self.assertIn("style", envlist)
+        self.assertIn(b"style", envlist)
 
     def test_it_skips_style_checks_when_asked(self):
         root = self.mkpkg("foo", "--no-style")
@@ -90,7 +90,7 @@ class TestMkpkg(TestCase):
             [sys.executable, "-m", "tox", "-l"],
             cwd=str(root / "foo"),
         )
-        self.assertNotIn("style", envlist)
+        self.assertNotIn(b"style", envlist)
 
     def test_it_initializes_a_vcs_by_default(self):
         root = self.mkpkg("foo")
