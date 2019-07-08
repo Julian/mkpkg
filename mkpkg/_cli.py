@@ -110,10 +110,10 @@ def dedented(*args, **kwargs):
     help="only create the core source files.",
 )
 @click.option(
-    "--no-style/--style",
+    "--style/--no-style",
     "style",
     default=True,
-    help="don't run pyflakes by default in tox runs.",
+    help="(don't) run pyflakes by default in tox runs.",
 )
 @click.option(
     "--no-sensibility",

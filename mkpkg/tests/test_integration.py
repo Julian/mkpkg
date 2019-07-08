@@ -68,6 +68,30 @@ class TestMkpkg(TestCase):
         )
         self.assertTrue(version.startswith("foo"))
 
+    def test_it_runs_style_checks_by_default(self):
+        root = self.mkpkg("foo")
+        envlist = subprocess.check_output(
+            [sys.executable, "-m", "tox", "-l"],
+            cwd=str(root / "foo"),
+        )
+        self.assertIn("style", envlist)
+
+    def test_it_runs_style_checks_when_explicitly_asked(self):
+        root = self.mkpkg("foo", "--style")
+        envlist = subprocess.check_output(
+            [sys.executable, "-m", "tox", "-l"],
+            cwd=str(root / "foo"),
+        )
+        self.assertIn("style", envlist)
+
+    def test_it_skips_style_checks_when_asked(self):
+        root = self.mkpkg("foo", "--no-style")
+        envlist = subprocess.check_output(
+            [sys.executable, "-m", "tox", "-l"],
+            cwd=str(root / "foo"),
+        )
+        self.assertNotIn("style", envlist)
+
     def mkpkg(self, *argv):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)
