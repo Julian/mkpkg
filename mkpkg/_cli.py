@@ -187,7 +187,7 @@ def main(
 
 
             class Test{name}(TestCase):
-                pass
+                {package_name}
             """.format(name=name.title(), package_name=package_name),
         }
 
