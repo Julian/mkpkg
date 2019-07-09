@@ -40,6 +40,10 @@ VERSION_CLASSIFIERS = {
 
     "jython": "Programming Language :: Python :: 2.7",
 }
+TEST_DEPS = {
+    "py.test": ["pytest"],
+    "trial": ["twisted"],
+}
 
 
 def dedented(*args, **kwargs):
@@ -226,13 +230,6 @@ def main(
                 ) for each in cli
             )
 
-    if test_runner == "pytest":
-        test_runner = "py.test"
-        test_deps = ["pytest"]
-    elif test_runner == "trial":
-        test_runner = "trial"
-        test_deps = ["twisted"]
-
     files = {
         root / "README.rst": render("README.rst", name=name, contents=readme),
         root / "COPYING": render(
@@ -285,7 +282,7 @@ def main(
             closed=closed,
             docs=docs,
             style=style,
-            test_deps=test_deps,
+            test_deps=TEST_DEPS[test_runner],
             test_runner=test_runner,
             tests=tests,
         ),
@@ -341,7 +338,7 @@ def main(
             ],
         )
         (root / "docs" / "index.rst").write_text(
-            README + u"\n\n" + dedented(
+            files[root / "README.rst"] + u"\n\n" + dedented(
                 u"""
                 Contents
                 --------
@@ -358,9 +355,18 @@ def main(
 
         git_dir = root / ".git"
         subprocess.check_call(
-            ["git", "--git-dir", str(git_dir), "--work-tree", name, "add", "COPYING"])
+            [
+                "git",
+                "--git-dir", str(git_dir),
+                "--work-tree", name,
+                "add", "COPYING",
+            ])
         subprocess.check_call(
-            ["git", "--git-dir", str(git_dir), "commit", "-m", "Initial commit"],
+            [
+                "git",
+                "--git-dir", str(git_dir),
+                "commit", "-m", "Initial commit",
+            ],
         )
 
 
@@ -378,7 +384,11 @@ def ini(*sections, **kwargs):
                 value = u"\n" + u"\n".join(value)
             parser.set(section, option, value)
     parser.write(lol_python)
-    value = lol_python.getvalue().replace(u"\t", u"    ").replace(u"= \n", u"=\n")
+    value = lol_python.getvalue().replace(
+        u"\t", u"    ",
+    ).replace(
+        u"= \n", u"=\n",
+    )
     return value[:-1]
 
 
