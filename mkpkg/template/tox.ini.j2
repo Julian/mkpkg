@@ -1,0 +1,84 @@
+[tox]
+envlist =
+    {% for env in supports | sort -%}
+    {{ env }}
+    {% endfor -%}
+    readme
+    safety
+    {% if style -%}style{%- endif -%}
+    {% if docs -%}docs-{html,doctest,linkcheck,spelling,style}{%- endif %}
+skipsdist = True
+
+[testenv]
+setenv =
+changedir = {envtmpdir}
+commands =
+    {envbindir}/pip install {toxinidir}
+    {envbindir}/{{ test_runner }} {posargs:{{ tests }}}
+    {envpython} -m doctest {toxinidir}/README.rst
+deps =
+    {% for each in test_deps -%}
+    {{ each }}
+    {%- endfor %}
+    {% if not closed %}codecov,{% endif %}coverage: coverage
+
+[testenv:coverage]
+setenv =
+    {[testenv]setenv}
+    COVERAGE_FILE={envtmpdir}/coverage-data
+commands =
+    {envbindir}/pip install {toxinidir}
+    {envbindir}/coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/{{ test_runner }} {{ tests }}
+    {envbindir}/coverage report --rcfile={toxinidir}/.coveragerc --show-missing
+    {envbindir}/coverage html --directory={envtmpdir}/htmlcov --rcfile={toxinidir}/.coveragerc {posargs}
+
+[testenv:readme]
+changedir = {toxinidir}
+deps = readme_renderer
+commands =
+    {envbindir}/python setup.py check --restructuredtext --strict
+
+[testenv:safety]
+deps = safety
+commands =
+    {envbindir}/pip install {toxinidir}
+    {envbindir}/safety check
+
+[testenv:style]
+deps =
+  ebb-lint
+  git+https://github.com/pyga/awpa@py37    
+commands = flake8 {posargs} --max-complexity 10 {{ tests }} {toxinidir}/setup.py
+{% if docs -%}
+{% for each in ["html", "doctest", "linkcheck", "spelling"] -%}
+
+[testenv:docs-{{ each }}]
+changedir = docs
+whitelist_externals = make
+commands = make -f {toxinidir}/docs/Makefile BUILDDIR={envtmpdir}/build SPHINXOPTS='-a -c {toxinidir}/docs/ -n -T -W {posargs}' {{ each }}
+deps =
+    -r{toxinidir}/docs/requirements.txt
+    {toxinidir}
+{% endfor %}
+
+[testenv:docs-style]
+changedir = docs
+commands = doc8 {posargs} {toxinidir}/docs
+deps =
+    doc8
+    pygments
+    pygments-github-lexers
+{% endif -%}
+{% if not closed %}
+[testenv:codecov]
+passenv = CODECOV* CI TRAVIS TRAVIS_*
+setenv =
+    {[testenv]setenv}
+    COVERAGE_DEBUG_FILE={envtmpdir}/coverage-debug
+    COVERAGE_FILE={envtmpdir}/coverage-data
+commands =
+    {envbindir}/pip install {toxinidir}
+    {envbindir}/coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/{{ test_runner }} {{ tests }}
+    {envbindir}/coverage xml -o {envtmpdir}/coverage.xml
+    {envbindir}/codecov --required --disable gcov --file {envtmpdir}/coverage.xml
+{%- endif %}
