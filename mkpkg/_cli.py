@@ -180,15 +180,11 @@ def main(
 
         core_source_paths = {
             package_name + ".py": script,
-            "tests.py": u"""
-            from unittest import TestCase
-
-            import {package_name}
-
-
-            class Test{name}(TestCase):
-                {package_name}
-            """.format(name=name.title(), package_name=package_name),
+            "tests.py": render(
+                "tests.py",
+                name=name,
+                package_name=package_name,
+            ),
         }
 
     else:
