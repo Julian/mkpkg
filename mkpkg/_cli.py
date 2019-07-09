@@ -233,17 +233,8 @@ def main(
         test_runner = "trial"
         test_deps = ["twisted"]
 
-    heading = dedented(
-        u"""
-        {bar}
-        {name}
-        {bar}
-        """.format(bar=u"=" * len(name), name=name),
-    )
-    README = heading + u"" if not readme else u"\n" + readme
-
     files = {
-        root / "README.rst": README,
+        root / "README.rst": render("README.rst", name=name, contents=readme),
         root / "COPYING": render(
             "COPYING", now=datetime.now(), author=author, closed=closed,
         ),
