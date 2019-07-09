@@ -289,11 +289,6 @@ def main(
         root / ".testr.conf": template(".testr.conf"),
     }
 
-    if docs:
-        files[root / "docs" / "requirements.txt"] = template(
-            "docs", "requirements.txt",
-        )
-
     if not closed:
         files.update(
             {
@@ -318,6 +313,10 @@ def main(
         path.write_text(dedented(content))
 
     if docs:
+        files[root / "docs" / "requirements.txt"] = template(
+            "docs", "requirements.txt",
+        )
+
         subprocess.check_call(
             [
                 "sphinx-quickstart",
