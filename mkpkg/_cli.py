@@ -216,7 +216,7 @@ def main(
             ]
             core_source_paths.update(
                 (
-                    package / "_" + each + ".py",
+                    package / ("_" + each + ".py"),
                     render(
                         "package",
                         "_cli.py",
@@ -233,68 +233,6 @@ def main(
         test_runner = "trial"
         test_deps = ["twisted"]
 
-    setup_sections = [
-        (
-            u"metadata", [
-                (u"name", package_name),
-                (u"url", u"https://github.com/Julian/" + name),
-
-                (u"description", u""),
-                (u"long_description", u"file: README.rst"),
-
-                (u"author", author),
-                (
-                    "author_email", (
-                        author_email or
-                        u"Julian+" + package_name + u"@GrayVines.com"
-                    ),
-                ),
-                (
-                    u"classifiers", render(
-                        "setup.cfg",
-                        status_classifier=STATUS_CLASSIFIERS[status],
-                        version_classifiers={
-                            VERSION_CLASSIFIERS[each]
-                            for each in supports
-                            if each in VERSION_CLASSIFIERS
-                        },
-                        closed=closed,
-                        supports=supports,
-                        py2=any(
-                            version.startswith("py2")
-                            or version in {"jython", "pypy"}
-                            for version in supports
-                        ),
-                        py3=any(
-                            version.startswith("py3")
-                            or version == "pypy3"
-                            for version in supports
-                        ),
-                        cpython=any(
-                            version not in {"jython", "pypy", "pypy3"}
-                            for version in supports
-                        ),
-                        pypy="pypy" in supports or "pypy3" in supports,
-                        jython="jython" in supports,
-                    ).splitlines(),
-                ),
-            ],
-        ), (
-            u"options", [
-                contents,
-                (u"setup_requires", u"setuptools_scm"),
-            ] + (
-                [(u"install_requires", [u"click"])] if console_scripts else []
-            ),
-        ),
-    ] + (
-        [(u"options.entry_points", [(u"console_scripts", console_scripts)])]
-        if console_scripts
-        else []
-    ) + [
-        (u"flake8", [(u"exclude", package_name + u"/__init__.py")]),
-    ]
-
     heading = dedented(
         u"""
         {bar}
@@ -310,7 +248,42 @@ def main(
             "COPYING", now=datetime.now(), author=author, closed=closed,
         ),
         root / "MANIFEST.in": template("MANIFEST.in"),
-        root / "setup.cfg": ini(*setup_sections),
+        root / "setup.cfg": render(
+            "setup.cfg",
+            package_name=package_name,
+            contents=contents,
+            name=name,
+            author=author,
+            console_scripts=console_scripts,
+            single_module=single_module,
+            author_email=(
+                author_email or u"Julian+" + package_name + u"@GrayVines.com"
+            ),
+            status_classifier=STATUS_CLASSIFIERS[status],
+            version_classifiers={
+                VERSION_CLASSIFIERS[each]
+                for each in supports
+                if each in VERSION_CLASSIFIERS
+            },
+            closed=closed,
+            supports=supports,
+            py2=any(
+                version.startswith("py2")
+                or version in {"jython", "pypy"}
+                for version in supports
+            ),
+            py3=any(
+                version.startswith("py3")
+                or version == "pypy3"
+                for version in supports
+            ),
+            cpython=any(
+                version not in {"jython", "pypy", "pypy3"}
+                for version in supports
+            ),
+            pypy="pypy" in supports or "pypy3" in supports,
+            jython="jython" in supports,
+        ),
         root / "setup.py": template("setup.py"),
         root / ".coveragerc": render(".coveragerc", package_name=package_name),
         root / "tox.ini": render(

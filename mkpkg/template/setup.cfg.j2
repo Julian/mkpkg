@@ -1,24 +1,50 @@
-{{ status_classifier }}
-Operating System :: OS Independent
-Programming Language :: Python
-{% if not closed -%}
-License :: OSI Approved :: MIT License
-{% endif -%}
-{% for each in version_classifiers | sort -%}
+[metadata]
+name = {{ package_name }}
+url = https://github.com/Julian/{{ name }}
+description =
+long_description = file: README.rst
+author = {{ author }}
+author_email = {{ author_email }}
+classifiers =
+    {{ status_classifier }}
+    Operating System :: OS Independent
+    Programming Language :: Python
+    {% if not closed -%}
+    License :: OSI Approved :: MIT License
+    {% endif -%}
+    {% for each in version_classifiers | sort -%}
+        {{ each }}
+    {% endfor -%}
+    {% if py2 -%}
+    Programming Language :: Python :: 2
+    {% endif -%}
+    {% if py3 -%}
+    Programming Language :: Python :: 3
+    {% endif -%}
+    {% if cpython -%}
+    Programming Language :: Python :: Implementation :: CPython
+    {% endif -%}
+    {% if pypy -%}
+    Programming Language :: Python :: Implementation :: PyPy
+    {% endif -%}
+    {% if jython -%}
+    Programming Language :: Python :: Implementation :: Jython
+    {% endif %}
+[options]
+{{ contents | join(" = ") }}
+setup_requires = setuptools_scm
+{%- if console_scripts %}
+install_requires =
+    click
+
+[options.entry_points]
+console_scripts =
+  {%- for each in console_scripts %}
     {{ each }}
-{% endfor -%}
-{% if py2 -%}
-Programming Language :: Python :: 2
-{% endif -%}
-{% if py3 -%}
-Programming Language :: Python :: 3
-{% endif -%}
-{% if cpython -%}
-Programming Language :: Python :: Implementation :: CPython
-{% endif -%}
-{% if pypy -%}
-Programming Language :: Python :: Implementation :: PyPy
-{% endif -%}
-{% if jython -%}
-Programming Language :: Python :: Implementation :: Jython
+  {%- endfor %}
+{%- endif %}
+{%- if not single_module %}
+
+[flake8]
+exclude = {{ package_name }}/__init__.py
 {% endif -%}
