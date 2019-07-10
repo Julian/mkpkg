@@ -333,16 +333,7 @@ def main(
             ],
         )
         (root / "docs" / "index.rst").write_text(
-            files[root / "README.rst"] + u"\n\n" + dedented(
-                u"""
-                Contents
-                --------
-
-                .. toctree::
-                    :glob:
-                    :maxdepth: 2
-                """,
-            ),
+            render("index.rst.j2", README=files[root / "README.rst"]),
         )
 
     if init_vcs and not bare:
