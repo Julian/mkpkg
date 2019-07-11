@@ -11,7 +11,7 @@ from mkpkg._cli import Path
 
 
 class TestMkpkg(TestCase):
-    def test_it_creates_packages_that_pass_their_own_initial_tests(self):
+    def test_it_creates_packages_that_pass_their_tests(self):
         root = self.mkpkg("foo")
         with (root / "foo" / "README.rst").open("at") as readme:
             readme.write(u"Some description.\n")
@@ -20,7 +20,16 @@ class TestMkpkg(TestCase):
             cwd=str(root / "foo"),
         )
 
-    def test_it_creates_single_modules_that_pass_their_own_initial_tests(self):
+    def test_it_creates_packages_with_docs_that_pass_their_tests(self):
+        root = self.mkpkg("foo", "--docs")
+        with (root / "foo" / "README.rst").open("at") as readme:
+            readme.write(u"Some description.\n")
+        subprocess.check_call(
+            [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
+            cwd=str(root / "foo"),
+        )
+
+    def test_it_creates_single_modules_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--single")
         with (root / "foo" / "README.rst").open("at") as readme:
             readme.write(u"Some description.\n")

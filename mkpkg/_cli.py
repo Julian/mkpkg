@@ -227,12 +227,12 @@ def main(
             )
 
     files = {
-        root / "README.rst": render("README.rst", name=name, contents=readme),
-        root / "COPYING": render(
+        "README.rst": render("README.rst", name=name, contents=readme),
+        "COPYING": render(
             "COPYING", now=datetime.now(), author=author, closed=closed,
         ),
-        root / "MANIFEST.in": template("MANIFEST.in"),
-        root / "setup.cfg": render(
+        "MANIFEST.in": template("MANIFEST.in"),
+        "setup.cfg": render(
             "setup.cfg",
             package_name=package_name,
             contents=contents,
@@ -268,9 +268,9 @@ def main(
             pypy="pypy" in supports or "pypy3" in supports,
             jython="jython" in supports,
         ),
-        root / "setup.py": template("setup.py"),
-        root / ".coveragerc": render(".coveragerc", package_name=package_name),
-        root / "tox.ini": render(
+        "setup.py": template("setup.py"),
+        ".coveragerc": render(".coveragerc", package_name=package_name),
+        "tox.ini": render(
             "tox.ini",
             name=name,
             package_name=package_name,
@@ -282,40 +282,40 @@ def main(
             test_runner=test_runner,
             tests=tests,
         ),
-        root / ".testr.conf": template(".testr.conf"),
+        ".testr.conf": template(".testr.conf"),
     }
 
     if not closed:
         files.update(
             {
                 # FIXME: Generate this based on supported versions
-                root / ".travis.yml": template(".travis.yml"),
-                root / "codecov.yml": template("codecov.yml"),
+                ".travis.yml": template(".travis.yml"),
+                "codecov.yml": template("codecov.yml"),
             },
         )
 
     if bare:
         targets = core_source_paths
     else:
-        files.update(
-            (root / path, content)
-            for path, content in core_source_paths.items()
-        )
+        files.update(core_source_paths)
         targets = files
         root.mkdir()
 
     for path, content in targets.items():
+        path = root / path
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(dedented(content))
 
     if docs:
-        files[root / "docs" / "requirements.txt"] = template(
-            "docs", "requirements.txt",
+        (root / "docs").mkdir()
+        (root / "docs" / "requirements.txt").write_text(
+            template("docs", "requirements.txt"),
         )
 
         subprocess.check_call(
             [
-                "sphinx-quickstart",
+                sys.executable,
+                "-m", "sphinx.cmd.quickstart",
                 "--quiet",
                 "--project", name,
                 "--author", author,
@@ -333,7 +333,7 @@ def main(
             ],
         )
         (root / "docs" / "index.rst").write_text(
-            render("index.rst.j2", README=files[root / "README.rst"]),
+            render("docs", "index.rst", README=files["README.rst"]),
         )
 
     if init_vcs and not bare:
