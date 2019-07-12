@@ -40,6 +40,14 @@ VERSION_CLASSIFIERS = {
 
     "jython": "Programming Language :: Python :: 2.7",
 }
+TRAVIS_SUPPORTS = {
+    "py27": "2.7",
+    "py35": "3.5",
+    "py36": "3.6",
+    "py37": "3.7",
+    "py38": "3.8",
+    "py39": "3.9",
+}
 TEST_DEPS = {
     "py.test": ["pytest"],
     "trial": ["twisted"],
@@ -288,8 +296,13 @@ def main(
     if not closed:
         files.update(
             {
-                # FIXME: Generate this based on supported versions
-                ".travis.yml": template(".travis.yml"),
+                ".travis.yml": render(
+                    ".travis.yml",
+                    travis_supports=sorted(
+                        TRAVIS_SUPPORTS.get(each, each)
+                        for each in supports
+                    ),
+                ),
                 "codecov.yml": template("codecov.yml"),
             },
         )
