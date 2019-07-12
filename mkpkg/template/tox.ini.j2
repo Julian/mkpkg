@@ -5,7 +5,7 @@ envlist =
     {% endfor -%}
     readme
     safety
-    {% if style -%}style{%- endif -%}
+    {% if style -%}style{%- endif %}
     {% if docs -%}docs-{html,doctest,linkcheck,spelling,style}{%- endif %}
 skipsdist = True
 

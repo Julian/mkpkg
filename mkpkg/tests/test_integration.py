@@ -15,28 +15,19 @@ class TestMkpkg(TestCase):
         root = self.mkpkg("foo")
         with (root / "foo" / "README.rst").open("at") as readme:
             readme.write(u"Some description.\n")
-        subprocess.check_call(
-            [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
-            cwd=str(root / "foo"),
-        )
+        self.tox(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_packages_with_docs_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--docs")
         with (root / "foo" / "README.rst").open("at") as readme:
             readme.write(u"Some description.\n")
-        subprocess.check_call(
-            [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
-            cwd=str(root / "foo"),
-        )
+        self.tox(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_single_modules_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--single")
         with (root / "foo" / "README.rst").open("at") as readme:
             readme.write(u"Some description.\n")
-        subprocess.check_call(
-            [sys.executable, "-m", "tox", "--skip-missing-interpreters"],
-            cwd=str(root / "foo"),
-        )
+        self.tox(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_clis(self):
         foo = self.mkpkg("foo", "--cli", "bar") / "foo"
@@ -77,30 +68,6 @@ class TestMkpkg(TestCase):
         )
         self.assertTrue(version.startswith(b"foo"))
 
-    def test_it_runs_style_checks_by_default(self):
-        root = self.mkpkg("foo")
-        envlist = subprocess.check_output(
-            [sys.executable, "-m", "tox", "-l"],
-            cwd=str(root / "foo"),
-        )
-        self.assertIn(b"style", envlist)
-
-    def test_it_runs_style_checks_when_explicitly_asked(self):
-        root = self.mkpkg("foo", "--style")
-        envlist = subprocess.check_output(
-            [sys.executable, "-m", "tox", "-l"],
-            cwd=str(root / "foo"),
-        )
-        self.assertIn(b"style", envlist)
-
-    def test_it_skips_style_checks_when_asked(self):
-        root = self.mkpkg("foo", "--no-style")
-        envlist = subprocess.check_output(
-            [sys.executable, "-m", "tox", "-l"],
-            cwd=str(root / "foo"),
-        )
-        self.assertNotIn(b"style", envlist)
-
     def test_it_initializes_a_vcs_by_default(self):
         root = self.mkpkg("foo")
         self.assertTrue((root / "foo" / ".git").is_dir())
@@ -117,6 +84,48 @@ class TestMkpkg(TestCase):
         root = self.mkpkg("foo", "--bare")
         self.assertFalse((root / "foo" / ".git").is_dir())
 
+    def test_default_tox_envs(self):
+        envlist = self.tox(self.mkpkg("foo") / "foo", "-l")
+        self.assertEqual(
+            set(envlist.splitlines()),
+            {"py36", "py37", "pypy", "pypy3", "readme", "safety", "style"},
+        )
+
+    def test_docs_tox_envs(self):
+        envlist = self.tox(self.mkpkg("foo", "--docs") / "foo", "-l")
+        self.assertEqual(
+            set(envlist.splitlines()),
+            {
+                "py36",
+                "py37",
+                "pypy",
+                "pypy3",
+                "readme",
+                "safety",
+                "style",
+                "docs-html",
+                "docs-doctest",
+                "docs-linkcheck",
+                "docs-spelling",
+                "docs-style",
+            },
+        )
+
+    def test_it_runs_style_checks_by_default(self):
+        root = self.mkpkg("foo")
+        envlist = self.tox(root / "foo", "-l")
+        self.assertIn(b"style", envlist)
+
+    def test_it_runs_style_checks_when_explicitly_asked(self):
+        root = self.mkpkg("foo", "--style")
+        envlist = self.tox(root / "foo", "-l")
+        self.assertIn(b"style", envlist)
+
+    def test_it_skips_style_checks_when_asked(self):
+        root = self.mkpkg("foo", "--no-style")
+        envlist = self.tox(root / "foo", "-l")
+        self.assertNotIn(b"style", envlist)
+
     def mkpkg(self, *argv):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)
@@ -131,6 +140,14 @@ class TestMkpkg(TestCase):
             ),
         )
         return Path(directory.name)
+
+    def tox(self, path, *argv):
+        return subprocess.check_output(
+            [
+                sys.executable, "-m", "tox",
+                "-c", str(path / "tox.ini")
+            ] + list(argv),
+        )
 
     def venv(self, package):
         venv = package / "venv"
