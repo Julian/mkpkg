@@ -48,7 +48,8 @@ commands =
 deps =
   ebb-lint
   git+https://github.com/pyga/awpa@py37    
-commands = flake8 {posargs} --max-complexity 10 {{ tests }} {toxinidir}/setup.py
+commands =
+  {envbindir}/flake8 {posargs} --max-complexity 10 {{ tests }} {toxinidir}/setup.py
 {% if docs -%}
 {% for each in ["html", "doctest", "linkcheck", "spelling"] -%}
 
