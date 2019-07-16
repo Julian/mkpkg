@@ -138,6 +138,7 @@ class TestMkpkg(TestCase):
                 GIT_COMMITTER_NAME="mkpkg unittests",
                 GIT_COMMITTER_EMAIL="mkpkg-unittests@local",
             ),
+            stderr=subprocess.STDOUT,
         )
         return Path(directory.name)
 
@@ -147,6 +148,7 @@ class TestMkpkg(TestCase):
                 sys.executable, "-m", "tox",
                 "-c", str(path / "tox.ini")
             ] + list(argv),
+            stderr=subprocess.STDOUT,
         )
 
     def venv(self, package):
