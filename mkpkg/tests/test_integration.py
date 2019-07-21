@@ -146,7 +146,7 @@ class TestMkpkg(TestCase):
         return subprocess.check_output(
             [
                 sys.executable, "-m", "tox",
-                "-c", str(path / "tox.ini")
+                "-c", str(path / "tox.ini"),
             ] + list(argv),
             stderr=subprocess.STDOUT,
         )
