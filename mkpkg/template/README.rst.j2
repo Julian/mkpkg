@@ -1,6 +1,30 @@
 {{ "=" * name | length }}
 {{ name }}
 {{ "=" * name | length }}
+{% if not closed %}
+|PyPI| |Pythons| |Travis| |Codecov|{% if docs %} |ReadTheDocs|{% endif %}
+
+.. |PyPI| image:: https://img.shields.io/pypi/v/{{ name }}.svg
+  :alt: PyPI version
+  :target: https://pypi.org/project/{{ name }}/
+
+.. |Pythons| image:: https://img.shields.io/pypi/pyversions/{{ name }}.svg
+  :alt: Supported Python versions
+  :target: https://pypi.org/project/{{ name }}/
+
+.. |Travis| image:: https://travis-ci.org/Julian/{{ name }}.svg?branch=master
+  :alt: Travis build status
+  :target: https://travis-ci.org/Julian/{{ name }}
+
+.. |Codecov| image:: https://codecov.io/gh/Julian/{{ name }}/branch/master/graph/badge.svg
+  :alt: Codecov Code coverage
+  :target: https://codecov.io/gh/Julian/{{ name }}
+{% if docs %}
+.. |ReadTheDocs| image:: https://readthedocs.org/projects/{{ name }}/badge/?version=stable&style=flat
+  :alt: ReadTheDocs status
+  :target: https://{{ name }}.readthedocs.io/en/stable/
+{% endif -%}
+{% endif -%}
 {% if contents %}
 {{ contents }}
 {% endif -%}

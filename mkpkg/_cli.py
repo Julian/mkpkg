@@ -235,7 +235,13 @@ def main(
             )
 
     files = {
-        "README.rst": render("README.rst", name=name, contents=readme),
+        "README.rst": render(
+            "README.rst",
+            name=name,
+            contents=readme,
+            closed=closed,
+            docs=docs,
+        ),
         "COPYING": render(
             "COPYING", now=datetime.now(), author=author, closed=closed,
         ),
