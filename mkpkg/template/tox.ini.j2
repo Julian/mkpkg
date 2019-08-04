@@ -5,6 +5,7 @@ envlist =
     {% endfor -%}
     readme
     safety
+    secrets
     {% if style -%}style{%- endif %}
     {% if docs -%}docs-{html,doctest,linkcheck,spelling,style}{%- endif %}
 skipsdist = True
@@ -43,6 +44,10 @@ deps = safety
 commands =
     {envbindir}/pip install {toxinidir}
     {envbindir}/safety check
+
+[testenv:secrets]
+deps = detect-secrets
+commands = {envbindir}/detect-secrets scan {toxinidir}
 
 [testenv:style]
 deps =
