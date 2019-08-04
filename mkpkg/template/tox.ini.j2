@@ -49,8 +49,7 @@ deps =
   ebb-lint
   git+https://github.com/pyga/awpa@py37    
 commands =
-  {envbindir}/flake8 {posargs} --max-complexity 10 {{ tests }} {toxinidir}/setup.py
-{% if docs -%}
+  {envbindir}/flake8 {posargs} --max-complexity 10 {{ tests }} {toxinidir}/setup.py{% if docs %} {toxinidir}/docs
 {% for each in ["html", "doctest", "linkcheck", "spelling"] -%}
 
 [testenv:docs-{{ each }}]
@@ -69,7 +68,7 @@ deps =
     doc8
     pygments
     pygments-github-lexers
-{% endif -%}
+{% endif %}
 {% if not closed %}
 [testenv:codecov]
 passenv = CODECOV* CI TRAVIS TRAVIS_*
