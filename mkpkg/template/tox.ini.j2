@@ -50,9 +50,7 @@ deps = detect-secrets
 commands = {envbindir}/detect-secrets scan {toxinidir}
 
 [testenv:style]
-deps =
-  ebb-lint
-  git+https://github.com/pyga/awpa@py37    
+deps = ebb-lint
 commands =
   {envbindir}/flake8 {posargs} --max-complexity 10 {{ tests }} {toxinidir}/setup.py{% if docs %} {toxinidir}/docs
 {% for each in ["html", "doctest", "linkcheck", "spelling"] -%}
