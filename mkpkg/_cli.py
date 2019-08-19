@@ -356,7 +356,7 @@ def main(
         )
 
     if init_vcs and not bare:
-        subprocess.check_call(["git", "init", name])
+        subprocess.check_call(["git", "init", "--quiet", name])
 
         git_dir = root / ".git"
         subprocess.check_call(
@@ -370,9 +370,14 @@ def main(
             [
                 "git",
                 "--git-dir", str(git_dir),
-                "commit", "-m", "Initial commit",
+                "commit", "--quiet", "-m", "Initial commit",
             ],
         )
+
+        if not closed:
+            click.echo(
+                "Set up codecov at: https://codecov.io/gh/Julian/" + name,
+            )
 
 
 def ini(*sections, **kwargs):
