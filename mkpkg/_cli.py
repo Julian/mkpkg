@@ -380,28 +380,6 @@ def main(
             )
 
 
-def ini(*sections, **kwargs):
-    """
-    Construct an INI-formatted str with the given contents.
-    """
-
-    lol_python = io.StringIO()
-    parser = configparser.ConfigParser(**kwargs)
-    for section, contents in sections:
-        parser.add_section(section)
-        for option, value in contents:
-            if isinstance(value, list):
-                value = u"\n" + u"\n".join(value)
-            parser.set(section, option, value)
-    parser.write(lol_python)
-    value = lol_python.getvalue().replace(
-        u"\t", u"    ",
-    ).replace(
-        u"= \n", u"=\n",
-    )
-    return value[:-1]
-
-
 def template(*segments):
     path = Path(__file__).with_name("template").joinpath(*segments)
     return path.read_text()
