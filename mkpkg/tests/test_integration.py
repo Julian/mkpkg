@@ -88,7 +88,16 @@ class TestMkpkg(TestCase):
         envlist = self.tox(self.mkpkg("foo") / "foo", "-l")
         self.assertEqual(
             set(envlist.splitlines()),
-            {"py36", "py37", "pypy", "pypy3", "readme", "safety", "style"},
+            {
+                "py36",
+                "py37",
+                "pypy",
+                "pypy3",
+                "readme",
+                "safety",
+                "secrets",
+                "style",
+            },
         )
 
     def test_docs_tox_envs(self):
@@ -102,6 +111,7 @@ class TestMkpkg(TestCase):
                 "pypy3",
                 "readme",
                 "safety",
+                "secrets",
                 "style",
                 "docs-html",
                 "docs-doctest",
