@@ -174,14 +174,12 @@ def main(
             sys.exit("Cannot create a single module with multiple CLIs.")
         elif cli:
             console_scripts = [u"{} = {}:main".format(cli[0], package_name)]
-            script = u"""
-            import click
-
-
-            @click.command()
-            def main():
-                pass
-            """
+            script = render(
+                "package", "_cli.py",
+                package_name=package_name,
+                cli=cli[0],
+                single_module=single_module,
+            )
         else:
             console_scripts = []
             script = u""
@@ -212,6 +210,7 @@ def main(
                 "package", "_cli.py",
                 package_name=package_name,
                 cli=cli[0],
+                single_module=single_module,
             )
             core_source_paths[package / "__main__.py"] = render(
                 "package", "__main__.py", package_name=package_name,
@@ -230,6 +229,7 @@ def main(
                         "_cli.py",
                         package_name=package_name,
                         cli=each,
+                        single_module=single_module,
                     ),
                 ) for each in cli
             )
