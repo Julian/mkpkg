@@ -157,6 +157,7 @@ class TestMkpkg(TestCase):
             [
                 sys.executable, "-m", "tox",
                 "-c", str(path / "tox.ini"),
+                "--workdir", str(path / "tox-work-dir"),
             ] + list(argv),
             stderr=subprocess.STDOUT,
         )
