@@ -13,20 +13,17 @@ from mkpkg._cli import Path
 class TestMkpkg(TestCase):
     def test_it_creates_packages_that_pass_their_tests(self):
         root = self.mkpkg("foo")
-        with (root / "foo" / "README.rst").open("at") as readme:
-            readme.write(u"Some description.\n")
+        _fix_readme(root / "foo")
         self.tox(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_packages_with_docs_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--docs")
-        with (root / "foo" / "README.rst").open("at") as readme:
-            readme.write(u"Some description.\n")
+        _fix_readme(root / "foo")
         self.tox(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_single_modules_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--single")
-        with (root / "foo" / "README.rst").open("at") as readme:
-            readme.write(u"Some description.\n")
+        _fix_readme(root / "foo")
         self.tox(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_clis(self):
@@ -175,3 +172,9 @@ class TestMkpkg(TestCase):
             ]
         )
         return venv
+
+
+def _fix_readme(path):
+    # Just the heading on the readme isn't good enough...
+    with (path / "README.rst").open("at") as readme:
+        readme.write(u"\n\nSome description.\n")
