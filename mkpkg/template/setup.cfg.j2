@@ -11,6 +11,8 @@ classifiers =
     Programming Language :: Python
     {% if not closed -%}
     License :: OSI Approved :: MIT License
+    {% else -%}
+    Private :: Do Not Upload
     {% endif -%}
     {% for each in version_classifiers | sort -%}
         {{ each }}
