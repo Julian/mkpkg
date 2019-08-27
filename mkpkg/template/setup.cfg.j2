@@ -47,4 +47,7 @@ console_scripts =
 
 [flake8]
 exclude = {{ package_name }}/__init__.py
-{% endif -%}
+{%- endif %}
+
+[bdist_wheel]
+universal = 1
