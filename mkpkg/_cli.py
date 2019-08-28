@@ -375,9 +375,7 @@ def main(
         )
 
         if not closed:
-            click.echo(
-                "Set up codecov at: https://codecov.io/gh/Julian/" + name,
-            )
+            click.echo("Set up CI at: https://travis-ci.org/Julian/" + name)
 
 
 def template(*segments):
