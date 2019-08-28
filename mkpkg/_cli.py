@@ -167,7 +167,6 @@ def main(
     package = Path(package_name)
 
     if single_module:
-        contents = u"py_modules", name
         tests = u"{toxinidir}/tests.py"
 
         if len(cli) > 1:
@@ -194,7 +193,6 @@ def main(
         }
 
     else:
-        contents = u"packages", u"find:"
         tests = package_name
 
         core_source_paths = {
@@ -250,7 +248,6 @@ def main(
         "setup.cfg": render(
             "setup.cfg.j2",
             package_name=package_name,
-            contents=contents,
             name=name,
             author=author,
             console_scripts=console_scripts,

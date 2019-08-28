@@ -33,7 +33,11 @@ classifiers =
     Programming Language :: Python :: Implementation :: Jython
     {% endif %}
 [options]
-{{ contents | join(" = ") }}
+{% if single_module -%}
+py_modules = {{ name }}
+{% else -%}
+packages = find:
+{% endif -%}
 setup_requires = setuptools_scm
 {%- if console_scripts %}
 install_requires =
