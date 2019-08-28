@@ -175,7 +175,7 @@ def main(
         elif cli:
             console_scripts = [u"{} = {}:main".format(cli[0], package_name)]
             script = render(
-                "package", "_cli.py",
+                "package", "_cli.py.j2",
                 package_name=package_name,
                 cli=cli[0],
                 single_module=single_module,
@@ -187,7 +187,7 @@ def main(
         core_source_paths = {
             package_name + ".py": script,
             "tests.py": render(
-                "tests.py",
+                "tests.py.j2",
                 name=name,
                 package_name=package_name,
             ),
@@ -207,13 +207,13 @@ def main(
                 "{} = {}._cli:main".format(cli[0], package_name),
             ]
             core_source_paths[package / "_cli.py"] = render(
-                "package", "_cli.py",
+                "package", "_cli.py.j2",
                 package_name=package_name,
                 cli=cli[0],
                 single_module=single_module,
             )
             core_source_paths[package / "__main__.py"] = render(
-                "package", "__main__.py", package_name=package_name,
+                "package", "__main__.py.j2", package_name=package_name,
             )
         else:
             console_scripts = [
@@ -226,7 +226,7 @@ def main(
                     package / ("_" + each + ".py"),
                     render(
                         "package",
-                        "_cli.py",
+                        "_cli.py.j2",
                         package_name=package_name,
                         cli=each,
                         single_module=single_module,
@@ -236,19 +236,19 @@ def main(
 
     files = {
         "README.rst": render(
-            "README.rst",
+            "README.rst.j2",
             name=name,
             contents=readme,
             closed=closed,
             docs=docs,
         ),
         "COPYING": render(
-            "COPYING", now=datetime.now(), author=author, closed=closed,
+            "COPYING.j2", now=datetime.now(), author=author, closed=closed,
         ),
         "MANIFEST.in": template("MANIFEST.in"),
         "pyproject.toml": template("pyproject.toml"),
         "setup.cfg": render(
-            "setup.cfg",
+            "setup.cfg.j2",
             package_name=package_name,
             contents=contents,
             name=name,
@@ -284,9 +284,9 @@ def main(
             jython="jython" in supports,
         ),
         "setup.py": template("setup.py"),
-        ".coveragerc": render(".coveragerc", package_name=package_name),
+        ".coveragerc": render(".coveragerc.j2", package_name=package_name),
         "tox.ini": render(
-            "tox.ini",
+            "tox.ini.j2",
             name=name,
             package_name=package_name,
             supports=supports,
@@ -304,7 +304,7 @@ def main(
         files.update(
             {
                 ".travis.yml": render(
-                    ".travis.yml",
+                    ".travis.yml.j2",
                     travis_supports=sorted(
                         TRAVIS_SUPPORTS.get(each, each)
                         for each in supports
@@ -353,7 +353,7 @@ def main(
             ],
         )
         (root / "docs" / "index.rst").write_text(
-            render("docs", "index.rst", README=files["README.rst"]),
+            render("docs", "index.rst.j2", README=files["README.rst"]),
         )
 
     if init_vcs and not bare:
@@ -385,7 +385,6 @@ def template(*segments):
 
 
 def render(*segments, **values):
-    segments = segments[:-1] + (segments[-1] + ".j2",)
     return jinja2.Template(
         template(*segments),
         undefined=jinja2.StrictUndefined,
