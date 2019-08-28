@@ -1,7 +1,7 @@
 import click
-
-{%- if not single_module %}from {{ package_name }} import __version__{% endif %}
-
+{% if not single_module %}
+from {{ package_name }} import __version__
+{% endif %}
 
 @click.command(context_settings=dict(help_option_names=["--help", "-h"]))
 @click.version_option(prog_name="{{ cli }}"{% if not single_module %}, version=__version__{% endif %})
