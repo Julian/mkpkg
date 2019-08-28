@@ -246,6 +246,7 @@ def main(
             "COPYING", now=datetime.now(), author=author, closed=closed,
         ),
         "MANIFEST.in": template("MANIFEST.in"),
+        "pyproject.toml": template("pyproject.toml"),
         "setup.cfg": render(
             "setup.cfg",
             package_name=package_name,
