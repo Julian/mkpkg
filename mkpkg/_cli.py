@@ -353,6 +353,10 @@ def main(
             render("docs", "index.rst.j2", README=files["README.rst"]),
         )
 
+        click.echo(
+            "Set up documentation at: https://readthedocs.org/dashboard/import/manual/",
+        )
+
     if init_vcs and not bare:
         subprocess.check_call(["git", "init", "--quiet", name])
 
