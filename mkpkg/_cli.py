@@ -349,9 +349,7 @@ def main(
                 str(root / "docs"),
             ],
         )
-        (root / "docs" / "index.rst").write_text(
-            render("docs", "index.rst.j2", README=files["README.rst"]),
-        )
+        (root / "docs" / "index.rst").write_text(template("docs", "index.rst"))
 
         click.echo(
             "Set up documentation at: https://readthedocs.org/dashboard/import/manual/",
