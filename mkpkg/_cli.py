@@ -163,7 +163,25 @@ def main(
         package_name = name
     package_name = package_name.lower().replace("-", "_")
 
-    root = Path(name)
+    env = jinja2.Environment(
+        loader=jinja2.PackageLoader("mkpkg", "template"),
+        undefined=jinja2.StrictUndefined,
+        keep_trailing_newline=True,
+    )
+    env.globals.update(
+        author=author,
+        cli=cli,
+        closed=closed,
+        docs=docs,
+        name=name,
+        now=datetime.now(),
+        package_name=package_name,
+        single_module=single_module,
+        style=style,
+        supports=supports,
+        test_runner=test_runner,
+    )
+
     package = Path(package_name)
 
     if single_module:
@@ -173,11 +191,8 @@ def main(
             sys.exit("Cannot create a single module with multiple CLIs.")
         elif cli:
             console_scripts = [u"{} = {}:main".format(cli[0], package_name)]
-            script = render(
-                "package", "_cli.py.j2",
-                package_name=package_name,
-                cli=cli[0],
-                single_module=single_module,
+            script = env.get_template("package/_cli.py.j2").render(
+                program_name=cli[0],
             )
         else:
             console_scripts = []
@@ -185,11 +200,7 @@ def main(
 
         core_source_paths = {
             package_name + ".py": script,
-            "tests.py": render(
-                "tests.py.j2",
-                name=name,
-                package_name=package_name,
-            ),
+            "tests.py": env.get_template("tests.py.j2").render(),
         }
 
     else:
@@ -204,15 +215,12 @@ def main(
             console_scripts = [
                 "{} = {}._cli:main".format(cli[0], package_name),
             ]
-            core_source_paths[package / "_cli.py"] = render(
-                "package", "_cli.py.j2",
-                package_name=package_name,
-                cli=cli[0],
-                single_module=single_module,
-            )
-            core_source_paths[package / "__main__.py"] = render(
-                "package", "__main__.py.j2", package_name=package_name,
-            )
+            core_source_paths[package / "_cli.py"] = env.get_template(
+                "package/_cli.py.j2",
+            ).render(program_name=cli[0])
+            core_source_paths[package / "__main__.py"] = env.get_template(
+                "package/__main__.py.j2",
+            ).render()
         else:
             console_scripts = [
                 "{each} = {package_name}._{each}:main".format(
@@ -222,36 +230,21 @@ def main(
             core_source_paths.update(
                 (
                     package / ("_" + each + ".py"),
-                    render(
-                        "package",
-                        "_cli.py.j2",
-                        package_name=package_name,
-                        cli=each,
-                        single_module=single_module,
+                    env.get_template("package/_cli.py.j2").render(
+                        program_name=each,
                     ),
                 ) for each in cli
             )
 
     files = {
-        "README.rst": render(
-            "README.rst.j2",
-            name=name,
+        "README.rst": env.get_template("README.rst.j2").render(
             contents=readme,
-            closed=closed,
-            docs=docs,
         ),
-        "COPYING": render(
-            "COPYING.j2", now=datetime.now(), author=author, closed=closed,
-        ),
+        "COPYING": env.get_template("COPYING.j2").render(),
         "MANIFEST.in": template("MANIFEST.in"),
         "pyproject.toml": template("pyproject.toml"),
-        "setup.cfg": render(
-            "setup.cfg.j2",
-            package_name=package_name,
-            name=name,
-            author=author,
+        "setup.cfg": env.get_template("setup.cfg.j2").render(
             console_scripts=console_scripts,
-            single_module=single_module,
             author_email=(
                 author_email or u"Julian+" + package_name + u"@GrayVines.com"
             ),
@@ -261,8 +254,6 @@ def main(
                 for each in supports
                 if each in VERSION_CLASSIFIERS
             },
-            closed=closed,
-            supports=supports,
             py2=any(
                 version.startswith("py2")
                 or version in {"jython", "pypy"}
@@ -281,17 +272,9 @@ def main(
             jython="jython" in supports,
         ),
         "setup.py": template("setup.py"),
-        ".coveragerc": render(".coveragerc.j2", package_name=package_name),
-        "tox.ini": render(
-            "tox.ini.j2",
-            name=name,
-            package_name=package_name,
-            supports=supports,
-            closed=closed,
-            docs=docs,
-            style=style,
+        ".coveragerc": env.get_template(".coveragerc.j2").render(),
+        "tox.ini": env.get_template("tox.ini.j2").render(
             test_deps=TEST_DEPS[test_runner],
-            test_runner=test_runner,
             tests=tests,
         ),
         ".testr.conf": template(".testr.conf"),
@@ -300,8 +283,7 @@ def main(
     if not closed:
         files.update(
             {
-                ".travis.yml": render(
-                    ".travis.yml.j2",
+                ".travis.yml": env.get_template(".travis.yml.j2").render(
                     travis_supports=sorted(
                         TRAVIS_SUPPORTS.get(each, each)
                         for each in supports
@@ -311,6 +293,7 @@ def main(
             },
         )
 
+    root = Path(name)
     if bare:
         targets = core_source_paths
     else:
@@ -381,11 +364,3 @@ def main(
 def template(*segments):
     path = Path(__file__).with_name("template").joinpath(*segments)
     return path.read_text()
-
-
-def render(*segments, **values):
-    return jinja2.Template(
-        template(*segments),
-        undefined=jinja2.StrictUndefined,
-        keep_trailing_newline=True,
-    ).render(values)
