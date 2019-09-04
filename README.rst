@@ -2,7 +2,7 @@
 mkpkg
 =====
 
-|PyPI| |Pythons| |Travis| |AppVeyor| |Codecov| |ReadTheDocs|
+|PyPI| |Pythons| |CI| |AppVeyor| |Codecov| |ReadTheDocs|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/mkpkg.svg
    :alt: PyPI version
@@ -12,8 +12,8 @@ mkpkg
    :alt: Supported Python versions
    :target: https://pypi.org/project/mkpkg/
 
-.. |Travis| image:: https://travis-ci.org/Julian/mkpkg.svg?branch=master
-   :alt: Travis build status
+.. |CI| image:: https://travis-ci.org/Julian/mkpkg.svg?branch=master
+   :alt: Build status
    :target: https://travis-ci.org/Julian/mkpkg
 
 .. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/n0ddnkcr1xh2j1fu?svg=true

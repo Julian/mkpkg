@@ -2,7 +2,7 @@
 {{ name }}
 {{ "=" * name | length }}
 {% if not closed %}
-|PyPI| |Pythons| |Travis| |Codecov|{% if docs %} |ReadTheDocs|{% endif %}
+|PyPI| |Pythons| |CI| |Codecov|{% if docs %} |ReadTheDocs|{% endif %}
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/{{ name }}.svg
   :alt: PyPI version
@@ -12,8 +12,8 @@
   :alt: Supported Python versions
   :target: https://pypi.org/project/{{ name }}/
 
-.. |Travis| image:: https://travis-ci.org/Julian/{{ name }}.svg?branch=master
-  :alt: Travis build status
+.. |CI| image:: https://travis-ci.org/Julian/{{ name }}.svg?branch=master
+  :alt: Build status
   :target: https://travis-ci.org/Julian/{{ name }}
 
 .. |Codecov| image:: https://codecov.io/gh/Julian/{{ name }}/branch/master/graph/badge.svg
