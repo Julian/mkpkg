@@ -1,0 +1,21 @@
+from cffi import FFI
+
+
+ffi = FFI()
+
+
+ffi.set_source(
+    "_{{ name }}",
+    """
+    #include ""
+    """,
+)
+
+ffi.cdef(
+    """
+    """,
+)
+
+
+if __name__ == "__main__":
+    ffi.compile()

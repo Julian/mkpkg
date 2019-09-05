@@ -122,6 +122,11 @@ def dedented(*args, **kwargs):
     help="only create the core source files.",
 )
 @click.option(
+    "--cffi/--no-cffi",
+    default=False,
+    help="include a build script for CFFI modules",
+)
+@click.option(
     "--style/--no-style",
     "style",
     default=True,
@@ -141,6 +146,7 @@ def main(
     name,
     author,
     author_email,
+    cffi,
     cli,
     readme,
     test_runner,
@@ -170,6 +176,7 @@ def main(
     )
     env.globals.update(
         author=author,
+        cffi=cffi,
         cli=cli,
         closed=closed,
         docs=docs,
@@ -210,6 +217,11 @@ def main(
             package / "tests" / "__init__.py": u"",
             package / "__init__.py": template("package", "__init__.py"),
         }
+
+        if cffi:
+            core_source_paths[package / "_build.py"] = env.get_template(
+                "package/_build.py.j2",
+            ).render()
 
         if len(cli) == 1:
             console_scripts = [
@@ -271,7 +283,7 @@ def main(
             pypy="pypy" in supports or "pypy3" in supports,
             jython="jython" in supports,
         ),
-        "setup.py": template("setup.py"),
+        "setup.py": env.get_template("setup.py.j2").render(),
         ".coveragerc": env.get_template(".coveragerc.j2").render(),
         "tox.ini": env.get_template("tox.ini.j2").render(
             test_deps=TEST_DEPS[test_runner],
