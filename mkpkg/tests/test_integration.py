@@ -26,6 +26,11 @@ class TestMkpkg(TestCase):
         _fix_readme(root / "foo")
         self.tox(root / "foo", "--skip-missing-interpreters")
 
+    def test_it_creates_cffi_packages_that_pass_their_tests(self):
+        root = self.mkpkg("foo", "--cffi")
+        _fix_readme(root / "foo")
+        self.tox(root / "foo", "--skip-missing-interpreters")
+
     def test_it_creates_clis(self):
         foo = self.mkpkg("foo", "--cli", "bar") / "foo"
         cli = foo / "foo" / "_cli.py"
