@@ -22,7 +22,7 @@ deps =
     {% for each in test_deps -%}
     {{ each }}
     {%- endfor %}
-    {% if not closed %}codecov,{% endif %}coverage: coverage
+    {% if not closed %}codecov,{% endif %}coverage: coverage>=5.0a7
 
 [testenv:coverage]
 setenv =
