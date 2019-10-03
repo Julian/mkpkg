@@ -41,8 +41,9 @@ py_modules = {{ name }}
 packages = find:
 {% endif -%}
 setup_requires = setuptools_scm
-{%- if console_scripts %}
 install_requires =
+    importlib_metadata
+{%- if console_scripts %}
     click
 
 [options.entry_points]
