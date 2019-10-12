@@ -67,7 +67,6 @@ commands =
 
 [testenv:docs-{{ each }}]
 changedir = docs
-whitelist_externals = make
 commands = {envpython} -m sphinx -b {{ each }} {toxinidir}/docs/ {envtmpdir}/build {posargs:-a -n -q -T -W}
 deps =
     -r{toxinidir}/docs/requirements.txt
