@@ -93,6 +93,7 @@ class TestMkpkg(TestCase):
             {
                 b"py36",
                 b"py37",
+                b"py38",
                 b"pypy",
                 b"pypy3",
                 b"build",
@@ -110,6 +111,7 @@ class TestMkpkg(TestCase):
             {
                 b"py36",
                 b"py37",
+                b"py38",
                 b"pypy",
                 b"pypy3",
                 b"build",
