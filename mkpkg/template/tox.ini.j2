@@ -66,15 +66,12 @@ commands =
 {% for each in ["html", "doctest", "linkcheck", "spelling"] -%}
 
 [testenv:docs-{{ each }}]
-changedir = docs
 commands = {envpython} -m sphinx -b {{ each }} {toxinidir}/docs/ {envtmpdir}/build {posargs:-a -n -q -T -W}
 deps =
     -r{toxinidir}/docs/requirements.txt
-    {toxinidir}
 {% endfor %}
 
 [testenv:docs-style]
-changedir = docs
 commands = doc8 {posargs} {toxinidir}/docs
 deps =
     doc8
