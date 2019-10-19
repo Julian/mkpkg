@@ -370,7 +370,7 @@ def main(
         )
 
         if not closed:
-            click.echo("Set up CI at: https://travis-ci.org/Julian/" + name)
+            click.echo("Set up CI at: https://travis-ci.com/Julian/" + name)
 
 
 def template(*segments):
