@@ -17,6 +17,8 @@ except ImportError:
 import click
 import jinja2
 
+from mkpkg import __version__
+
 
 STATUS_CLASSIFIERS = {
     "planning": "Development Status :: 1 - Planning",
@@ -142,6 +144,7 @@ def dedented(*args, **kwargs):
     default=False,
     help="create a closed source package.",
 )
+@click.version_option(prog_name="mkpkg", version=__version__)
 def main(
     name,
     author,
