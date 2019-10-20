@@ -13,4 +13,10 @@ script:
 - tox
 
 after_success:
-- tox -e codecov
+- tox -e codecov{% if docs %}
+
+addons:
+  apt:
+    packages:
+    - libenchant-dev
+{%- endif %}
