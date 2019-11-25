@@ -224,7 +224,7 @@ def main(
         if cffi:
             core_source_paths[package / "_build.py"] = env.get_template(
                 "package/_build.py.j2",
-            ).render()
+            ).render(cname=_cname(name))
 
         if len(cli) == 1:
             console_scripts = [
@@ -379,3 +379,11 @@ def main(
 def template(*segments):
     path = Path(__file__).with_name("template").joinpath(*segments)
     return path.read_text()
+
+
+def _cname(name):
+    if name.endswith("-cffi"):
+        name = name[:-len("-cffi")]
+    if name.startswith("lib"):
+        name = name[len("lib"):]
+    return "_" + name
