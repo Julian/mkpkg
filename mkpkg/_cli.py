@@ -218,7 +218,9 @@ def main(
 
         core_source_paths = {
             package / "tests" / "__init__.py": u"",
-            package / "__init__.py": template("package", "__init__.py"),
+            package / "__init__.py": env.get_template(
+                "package/__init__.py.j2",
+            ).render(),
         }
 
         if cffi:
