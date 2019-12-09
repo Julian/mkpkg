@@ -295,6 +295,9 @@ def main(
             tests=tests,
         ),
         ".testr.conf": template(".testr.conf"),
+        Path(".github") / "workflows" / "packaging.yml": template(
+            ".github/workflows/packaging.yml"
+        ),
     }
 
     if not closed:
