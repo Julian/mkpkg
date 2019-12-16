@@ -2,7 +2,7 @@
 mkpkg
 =====
 
-|PyPI| |Pythons| |CI| |AppVeyor| |Codecov| |ReadTheDocs|
+|PyPI| |Pythons| |CI| |Codecov| |ReadTheDocs|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/mkpkg.svg
    :alt: PyPI version
@@ -15,10 +15,6 @@ mkpkg
 .. |CI| image:: https://github.com/Julian/mkpkg/workflows/CI/badge.svg
   :alt: Build status
   :target: https://github.com/Julian/mkpkg/actions?query=workflow%3ACI
-
-.. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/n0ddnkcr1xh2j1fu?svg=true
-   :alt: AppVeyor build status
-   :target: https://ci.appveyor.com/project/Julian/mkpkg
 
 .. |Codecov| image:: https://codecov.io/gh/Julian/mkpkg/branch/master/graph/badge.svg
    :alt: Codecov Code coverage
