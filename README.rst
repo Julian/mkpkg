@@ -12,9 +12,9 @@ mkpkg
    :alt: Supported Python versions
    :target: https://pypi.org/project/mkpkg/
 
-.. |CI| image:: https://travis-ci.com/Julian/mkpkg.svg?branch=master
-   :alt: Build status
-   :target: https://travis-ci.com/Julian/mkpkg
+.. |CI| image:: https://github.com/Julian/mkpkg/workflows/CI/badge.svg
+  :alt: Build status
+  :target: https://github.com/Julian/mkpkg/actions?query=workflow%3ACI
 
 .. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/n0ddnkcr1xh2j1fu?svg=true
    :alt: AppVeyor build status
