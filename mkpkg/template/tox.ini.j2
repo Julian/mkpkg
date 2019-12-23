@@ -23,6 +23,7 @@ deps =
     {{ each }}
     {%- endfor %}
     {% if not closed %}codecov,{% endif %}coverage: coverage
+    {% if not closed %}codecov: codecov{%- endif %}
 
 [testenv:coverage]
 setenv =
