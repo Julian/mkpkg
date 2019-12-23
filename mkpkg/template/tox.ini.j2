@@ -15,7 +15,7 @@ skipsdist = True
 setenv =
 changedir = {envtmpdir}
 commands =
-    {envbindir}/pip install {toxinidir}
+    {envpython} -m pip install {toxinidir}
     {envbindir}/{{ test_runner }} {posargs:{{ tests }}}
     {envpython} -m doctest {toxinidir}/README.rst
 deps =
@@ -29,31 +29,31 @@ setenv =
     {[testenv]setenv}
     COVERAGE_FILE={envtmpdir}/coverage-data
 commands =
-    {envbindir}/pip install {toxinidir}
-    {envbindir}/coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/{{ test_runner }} {{ tests }}
-    {envbindir}/coverage report --rcfile={toxinidir}/.coveragerc --show-missing
-    {envbindir}/coverage html --directory={envtmpdir}/htmlcov --rcfile={toxinidir}/.coveragerc {posargs}
+    {envpython} -m pip install {toxinidir}
+    {envpython} -m coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/{{ test_runner }} {{ tests }}
+    {envpython} -m coverage report --rcfile={toxinidir}/.coveragerc --show-missing
+    {envpython} -m coverage html --directory={envtmpdir}/htmlcov --rcfile={toxinidir}/.coveragerc {posargs}
 
 [testenv:build]
 deps = pep517
 commands =
-    {envbindir}/python -m pep517.check {toxinidir}
+    {envpython} -m pep517.check {toxinidir}
 
 [testenv:bandit]
 deps = bandit
-commands = {envbindir}/bandit --recursive {{ tests }}
+commands = {envpython} -m bandit --recursive {{ tests }}
 
 [testenv:readme]
 changedir = {toxinidir}
 deps = readme_renderer
 commands =
-    {envbindir}/python setup.py check --restructuredtext --strict
+    {envpython} setup.py check --restructuredtext --strict
 
 [testenv:safety]
 deps = safety
 commands =
-    {envbindir}/pip install {toxinidir}
-    {envbindir}/safety check
+    {envpython} -m pip install {toxinidir}
+    {envpython} -m safety check
 
 [testenv:secrets]
 deps = detect-secrets
@@ -62,7 +62,7 @@ commands = {envbindir}/detect-secrets scan {toxinidir}
 [testenv:style]
 deps = ebb-lint
 commands =
-    {envbindir}/flake8 {posargs} --max-complexity 10 {{ tests }} {toxinidir}/setup.py{% if docs %} {toxinidir}/docs
+    {envpython} -m flake8 {posargs} --max-complexity 10 {{ tests }} {toxinidir}/setup.py{% if docs %} {toxinidir}/docs
 {% for each in ["html", "doctest", "linkcheck", "spelling"] -%}
 
 [testenv:docs-{{ each }}]
@@ -86,8 +86,8 @@ setenv =
     COVERAGE_DEBUG_FILE={envtmpdir}/coverage-debug
     COVERAGE_FILE={envtmpdir}/coverage-data
 commands =
-    {envbindir}/pip install {toxinidir}
-    {envbindir}/coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/{{ test_runner }} {{ tests }}
-    {envbindir}/coverage xml -o {envtmpdir}/coverage.xml
-    {envbindir}/codecov --required --disable gcov --file {envtmpdir}/coverage.xml
+    {envpython} -m pip install {toxinidir}
+    {envpython} -m coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/{{ test_runner }} {{ tests }}
+    {envpython} -m coverage xml -o {envtmpdir}/coverage.xml
+    {envpython} -m codecov --required --disable gcov --file {envtmpdir}/coverage.xml
 {%- endif %}
