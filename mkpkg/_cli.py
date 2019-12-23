@@ -30,7 +30,7 @@ STATUS_CLASSIFIERS = {
     "inactive": "Development Status :: 7 - Inactive",
 }
 VERSION_CLASSIFIERS = {
-    "pypy": "Programming Language :: Python :: 2.7",
+    "pypy2": "Programming Language :: Python :: 2.7",
     "pypy3": "Programming Language :: Python :: 3.6",
 
     "py27": "Programming Language :: Python :: 2.7",
@@ -95,7 +95,7 @@ def dedented(*args, **kwargs):
     "--supports",
     multiple=True,
     type=click.Choice(sorted(VERSION_CLASSIFIERS)),
-    default=["py36", "py37", "py38", "pypy", "pypy3"],
+    default=["py36", "py37", "py38", "pypy2", "pypy3"],
     help="a version of Python supported by the package",
 )
 @click.option(
@@ -273,7 +273,7 @@ def main(
             },
             py2=any(
                 version.startswith("py2")
-                or version in {"jython", "pypy"}
+                or version in {"jython", "pypy2"}
                 for version in supports
             ),
             py3=any(
@@ -282,10 +282,10 @@ def main(
                 for version in supports
             ),
             cpython=any(
-                version not in {"jython", "pypy", "pypy3"}
+                version not in {"jython", "pypy2", "pypy3"}
                 for version in supports
             ),
-            pypy="pypy" in supports or "pypy3" in supports,
+            pypy="pypy2" in supports or "pypy3" in supports,
             jython="jython" in supports,
         ),
         "setup.py": env.get_template("setup.py.j2").render(),
