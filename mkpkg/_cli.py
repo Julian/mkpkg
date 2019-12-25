@@ -259,7 +259,7 @@ def main(
         ),
         "COPYING": env.get_template("COPYING.j2").render(),
         "MANIFEST.in": template("MANIFEST.in"),
-        "pyproject.toml": template("pyproject.toml"),
+        "pyproject.toml": env.get_template("pyproject.toml.j2").render(),
         "setup.cfg": env.get_template("setup.cfg.j2").render(
             console_scripts=console_scripts,
             author_email=(

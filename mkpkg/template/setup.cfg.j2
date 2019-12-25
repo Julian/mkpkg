@@ -42,7 +42,9 @@ py_modules = {{ name }}
 {% else -%}
 packages = find:
 {% endif -%}
-setup_requires = setuptools_scm
+setup_requires = {% if cffi %}
+    cffi>=1.0.0 {% endif %}
+    setuptools_scm
 install_requires =
     importlib_metadata; python_version < '3.8'
 {%- if console_scripts %}
