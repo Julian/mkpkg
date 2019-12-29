@@ -81,7 +81,7 @@ deps =
 {% endif %}
 {% if not closed %}
 [testenv:codecov]
-passenv = CODECOV* CI TRAVIS TRAVIS_*
+passenv = CODECOV* CI
 setenv =
     {[testenv]setenv}
     COVERAGE_DEBUG_FILE={envtmpdir}/coverage-debug

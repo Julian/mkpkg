@@ -1,6 +1,7 @@
 #! /usr/bin/env python2
 
 from datetime import datetime
+from textwrap import dedent
 import configparser
 import io
 import os
@@ -42,19 +43,11 @@ VERSION_CLASSIFIERS = {
 
     "jython": "Programming Language :: Python :: 2.7",
 }
-TRAVIS_SUPPORTS = {
-    "py27": "2.7",
-    "py35": "3.5",
-    "py36": "3.6",
-    "py37": "3.7",
-    "py38": "3.8",
-    "py39": "3.9",
-}
 TEST_DEPS = {
     "py.test": ["pytest"],
     "trial": ["twisted"],
 }
-
+TEMPLATE = Path(__file__).with_name("template")
 
 def dedented(*args, **kwargs):
     return textwrap.dedent(*args, **kwargs).lstrip("\n")
@@ -295,23 +288,12 @@ def main(
             tests=tests,
         ),
         ".testr.conf": template(".testr.conf"),
-        Path(".github") / "workflows" / "packaging.yml": template(
-            ".github/workflows/packaging.yml"
-        ),
     }
 
     if not closed:
-        files.update(
-            {
-                ".travis.yml": env.get_template(".travis.yml.j2").render(
-                    travis_supports=sorted(
-                        TRAVIS_SUPPORTS.get(each, each)
-                        for each in supports
-                    ),
-                ),
-                "codecov.yml": template("codecov.yml"),
-            },
-        )
+        for each in (TEMPLATE / ".github" / "workflows").iterdir():
+            files[".github/workflows/" + each.name] = each.read_text()
+        files["codecov.yml"] = template("codecov.yml")
 
     root = Path(name)
     if bare:
@@ -378,12 +360,23 @@ def main(
         )
 
         if not closed:
-            click.echo("Set up CI at: https://travis-ci.com/Julian/" + name)
+            click.echo(
+                dedent(
+                    """
+                    Set up:
+                      * a PyPI token from https://pypi.org/manage/account/token/
+                        named 'GitHub Actions - {0}'
+                      * a CodeCov token from https://codecov.io/gh/Julian/{0}
+
+                    and include them in the GitHub secrets at
+                    https://github.com/Julian/{0}/settings/secrets
+                    """.format(name),
+                ),
+            )
 
 
 def template(*segments):
-    path = Path(__file__).with_name("template").joinpath(*segments)
-    return path.read_text()
+    return TEMPLATE.joinpath(*segments).read_text()
 
 
 def _cname(name):
