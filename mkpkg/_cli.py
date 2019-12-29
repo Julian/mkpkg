@@ -44,8 +44,8 @@ VERSION_CLASSIFIERS = {
     "jython": "Programming Language :: Python :: 2.7",
 }
 TEST_DEPS = {
-    "py.test": ["pytest"],
-    "trial": ["twisted"],
+    "pytest": ["pytest"],
+    "twisted.trial": ["twisted"],
 }
 TEMPLATE = Path(__file__).with_name("template")
 
@@ -79,8 +79,8 @@ def dedented(*args, **kwargs):
 @click.option(
     "-t",
     "--test-runner",
-    default="trial",
-    type=click.Choice(["pytest", "trial"]),
+    default="twisted.trial",
+    type=click.Choice(["pytest", "twisted.trial"]),
     help="the test runner to use",
 )
 @click.option(

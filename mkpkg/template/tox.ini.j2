@@ -16,7 +16,7 @@ setenv =
 changedir = {envtmpdir}
 commands =
     {envpython} -m pip install {toxinidir}
-    {envbindir}/{{ test_runner }} {posargs:{{ tests }}}
+    {envpython} -m {{ test_runner }} {posargs:{{ tests }}}
     {envpython} -m doctest {toxinidir}/README.rst
 deps =
     {% for each in test_deps -%}
@@ -31,7 +31,7 @@ setenv =
     COVERAGE_FILE={envtmpdir}/coverage-data
 commands =
     {envpython} -m pip install {toxinidir}
-    {envpython} -m coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/{{ test_runner }} {{ tests }}
+    {envpython} -m coverage run --rcfile={toxinidir}/.coveragerc -m {{ test_runner }} {{ tests }}
     {envpython} -m coverage report --rcfile={toxinidir}/.coveragerc --show-missing
     {envpython} -m coverage html --directory={envtmpdir}/htmlcov --rcfile={toxinidir}/.coveragerc {posargs}
 
@@ -88,7 +88,7 @@ setenv =
     COVERAGE_FILE={envtmpdir}/coverage-data
 commands =
     {envpython} -m pip install {toxinidir}
-    {envpython} -m coverage run --rcfile={toxinidir}/.coveragerc {envbindir}/{{ test_runner }} {{ tests }}
+    {envpython} -m coverage run --rcfile={toxinidir}/.coveragerc -m {{ test_runner }} {{ tests }}
     {envpython} -m coverage xml -o {envtmpdir}/coverage.xml
     {envpython} -m codecov --required --disable gcov --file {envtmpdir}/coverage.xml
 {%- endif %}
