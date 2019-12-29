@@ -293,6 +293,7 @@ def main(
     if not closed:
         for each in (TEMPLATE / ".github" / "workflows").iterdir():
             files[".github/workflows/" + each.name] = each.read_text()
+        files[".github/FUNDING.yml"] = template(".github/FUNDING.yml")
         files["codecov.yml"] = template("codecov.yml")
 
     root = Path(name)
