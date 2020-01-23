@@ -1,9 +1,2 @@
 from setuptools import setup
-setup(
-    {%- if not cffi -%}
-    use_scm_version=True
-    {%- else %}
-    cffi_modules=["{{ package_name }}/_build.py:ffi"],
-    use_scm_version=True,
-{% endif -%}
-)
+setup(cffi_modules=["{{ package_name }}/_build.py:ffi"])

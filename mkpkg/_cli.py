@@ -281,7 +281,6 @@ def main(
             pypy="pypy2" in supports or "pypy3" in supports,
             jython="jython" in supports,
         ),
-        "setup.py": env.get_template("setup.py.j2").render(),
         ".coveragerc": env.get_template(".coveragerc.j2").render(),
         "tox.ini": env.get_template("tox.ini.j2").render(
             test_deps=TEST_DEPS[test_runner],
@@ -289,6 +288,9 @@ def main(
         ),
         ".testr.conf": template(".testr.conf"),
     }
+
+    if cffi:
+        files["setup.py"] = env.get_template("setup.py.j2").render()
 
     if not closed:
         for each in (TEMPLATE / ".github" / "workflows").iterdir():
