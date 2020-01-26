@@ -65,7 +65,7 @@ commands = {envbindir}/detect-secrets scan {toxinidir}
 [testenv:style]
 deps = ebb-lint
 commands =
-    {envpython} -m flake8 {posargs} --max-complexity 10 {{ tests }} {toxinidir}/setup.py{% if docs %} {toxinidir}/docs
+    {envpython} -m flake8 {posargs} --max-complexity 10 {{ tests }}{% if cffi %} {toxinidir}/setup.py{% endif %}{% if docs %} {toxinidir}/docs
 {% for each in ["html", "doctest", "linkcheck", "spelling"] -%}
 
 [testenv:docs-{{ each }}]
