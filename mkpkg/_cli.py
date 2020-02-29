@@ -2,8 +2,6 @@
 
 from datetime import datetime
 from textwrap import dedent
-import configparser
-import io
 import os
 import pwd
 import sys
@@ -48,6 +46,7 @@ TEST_DEPS = {
     "twisted.trial": ["twisted"],
 }
 TEMPLATE = Path(__file__).with_name("template")
+
 
 def dedented(*args, **kwargs):
     return textwrap.dedent(*args, **kwargs).lstrip("\n")
