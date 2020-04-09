@@ -119,7 +119,7 @@ class TestMkpkg(TestCase):
                 b"safety",
                 b"secrets",
                 b"style",
-                b"docs-html",
+                b"docs-dirhtml",
                 b"docs-doctest",
                 b"docs-linkcheck",
                 b"docs-spelling",

@@ -8,7 +8,7 @@ envlist =
     safety
     secrets
     {% if style -%}style{%- endif %}
-    {% if docs -%}docs-{html,doctest,linkcheck,spelling,style}{%- endif %}
+    {% if docs -%}docs-{dirhtml,doctest,linkcheck,spelling,style}{%- endif %}
 skipsdist = True
 
 [testenv]
@@ -66,7 +66,7 @@ commands = {envbindir}/detect-secrets scan {toxinidir}
 deps = ebb-lint
 commands =
     {envpython} -m flake8 {posargs} --max-complexity 10 {{ tests }}{% if cffi %} {toxinidir}/setup.py{% endif %}{% if docs %} {toxinidir}/docs
-{% for each in ["html", "doctest", "linkcheck", "spelling"] -%}
+{% for each in ["dirhtml", "doctest", "linkcheck", "spelling"] -%}
 
 [testenv:docs-{{ each }}]
 commands = {envpython} -m sphinx -b {{ each }} {toxinidir}/docs/ {envtmpdir}/build {posargs:-a -n -q -T -W}
