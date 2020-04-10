@@ -1,5 +1,3 @@
-#! /usr/bin/env python2
-
 from datetime import datetime
 from textwrap import dedent
 import os
