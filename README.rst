@@ -1,6 +1,6 @@
-=====
-mkpkg
-=====
+=========
+``mkpkg``
+=========
 
 |PyPI| |Pythons| |CI| |Codecov| |ReadTheDocs|
 
