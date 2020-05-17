@@ -204,7 +204,6 @@ def entire_domain(host):
 
 
 linkcheck_ignore = [
-    entire_domain("codecov.io"),
     "https://github.com/Julian/mkpkg/actions",
     "https://github.com/Julian/mkpkg/workflows/CI/badge.svg",
 ]

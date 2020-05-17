@@ -2,7 +2,7 @@
 ``mkpkg``
 =========
 
-|PyPI| |Pythons| |CI| |Codecov| |ReadTheDocs|
+|PyPI| |Pythons| |CI| |ReadTheDocs|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/mkpkg.svg
    :alt: PyPI version
@@ -15,10 +15,6 @@
 .. |CI| image:: https://github.com/Julian/mkpkg/workflows/CI/badge.svg
   :alt: Build status
   :target: https://github.com/Julian/mkpkg/actions?query=workflow%3ACI
-
-.. |Codecov| image:: https://codecov.io/gh/Julian/mkpkg/branch/master/graph/badge.svg
-   :alt: Codecov Code coverage
-   :target: https://codecov.io/gh/Julian/mkpkg
 
 .. |ReadTheDocs| image:: https://readthedocs.org/projects/mkpkg/badge/?version=stable&style=flat
    :alt: ReadTheDocs status
