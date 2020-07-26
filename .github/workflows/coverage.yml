@@ -25,4 +25,3 @@ jobs:
         CODECOV_TOKEN: de12a2a0-8dc0-4f1c-9c3c-929f46d0106b
         LANG: C.UTF-8
         LC_ALL: C.UTF-8
-        TOX_PARALLEL_NO_SPINNER: 1
