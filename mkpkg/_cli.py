@@ -1,15 +1,11 @@
 from datetime import datetime
+from pathlib import Path
 from textwrap import dedent
 import os
 import pwd
 import sys
 import subprocess
 import textwrap
-
-try:
-    from pathlib import Path
-except ImportError:
-    from pathlib2 import Path
 
 import click
 import jinja2
@@ -44,6 +40,10 @@ TEST_DEPS = {
     "twisted.trial": ["twisted"],
 }
 TEMPLATE = Path(__file__).with_name("template")
+
+CODECOV_URL = "https://codecov.io/gh/Julian"
+PYPI_TOKEN_URL = "https://pypi.org/manage/account/token/"
+READTHEDOCS_IMPORT_URL = "https://readthedocs.org/dashboard/import/manual/"
 
 
 def dedented(*args, **kwargs):
@@ -190,7 +190,7 @@ def main(
         if len(cli) > 1:
             sys.exit("Cannot create a single module with multiple CLIs.")
         elif cli:
-            console_scripts = [u"{} = {}:main".format(cli[0], package_name)]
+            console_scripts = [f"{cli[0]} = {package_name}:main"]
             script = env.get_template("package/_cli.py.j2").render(
                 program_name=cli[0],
             )
@@ -219,9 +219,7 @@ def main(
             ).render(cname=_cname(name))
 
         if len(cli) == 1:
-            console_scripts = [
-                "{} = {}._cli:main".format(cli[0], package_name),
-            ]
+            console_scripts = [f"{cli[0]} = {package_name}"]
             core_source_paths[package / "_cli.py"] = env.get_template(
                 "package/_cli.py.j2",
             ).render(program_name=cli[0])
@@ -230,9 +228,7 @@ def main(
             ).render()
         else:
             console_scripts = [
-                "{each} = {package_name}._{each}:main".format(
-                    each=each, package_name=package_name,
-                ) for each in cli
+                f"{each} = {package_name}._{each}:main" for each in cli
             ]
             core_source_paths.update(
                 (
@@ -339,9 +335,7 @@ def main(
         )
         (root / "docs" / "index.rst").write_text(template("docs", "index.rst"))
 
-        click.echo(
-            "Set up documentation at: https://readthedocs.org/dashboard/import/manual/",
-        )
+        click.echo(f"Set up documentation at: {READTHEDOCS_IMPORT_URL}")
 
     if init_vcs and not bare:
         subprocess.check_call(["git", "init", "--quiet", name])
@@ -365,15 +359,16 @@ def main(
         if not closed:
             click.echo(
                 dedent(
-                    """
+                    f"""
                     Set up:
-                      * a PyPI token from https://pypi.org/manage/account/token/
-                        named 'GitHub Actions - {0}'
-                      * a CodeCov token from https://codecov.io/gh/Julian/{0}
+
+                      * a PyPI token from {PYPI_TOKEN_URL} named
+                        'GitHub Actions - {name}'
+                      * a CodeCov token from {CODECOV_URL}/{name}
 
                     and include them in the GitHub secrets at
-                    https://github.com/Julian/{0}/settings/secrets
-                    """.format(name),
+                    https://github.com/Julian/{name}/settings/secrets
+                    """,
                 ),
             )
 
