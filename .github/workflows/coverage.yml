@@ -23,3 +23,5 @@ jobs:
       run: python -m tox -e codecov
       env:
         CODECOV_TOKEN: de12a2a0-8dc0-4f1c-9c3c-929f46d0106b
+        LANG: en_US.UTF-8
+        LC_ALL: en_US.UTF-8
