@@ -222,7 +222,7 @@ def main(
             ).render(cname=_cname(name))
 
         if len(cli) == 1:
-            console_scripts = [f"{cli[0]} = {package_name}"]
+            console_scripts = [f"{cli[0]} = {package_name}:main"]
             core_source_paths[package / "_cli.py"] = env.get_template(
                 "package/_cli.py.j2",
             ).render(program_name=cli[0])
