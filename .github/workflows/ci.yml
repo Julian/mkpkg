@@ -65,3 +65,4 @@ jobs:
       env:
         LANG: en_US.UTF-8
         LC_ALL: en_US.UTF-8
+        TOX_PARALLEL_NO_SPINNER: 1
