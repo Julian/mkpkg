@@ -54,10 +54,10 @@ jobs:
       run: python -m pip install -U pip setuptools
     - name: Install dependencies
       run: sudo apt-get install -y libenchant-dev
-      if: runner.os == 'Linux' && startsWith(matrix.python-version.toxenv, 'docs-')
+      if: runner.os == 'Linux'
     - name: Install dependencies
       run: brew install enchant
-      if: runner.os == 'macOS' && startsWith(matrix.python-version.toxenv, 'docs-')
+      if: runner.os == 'macOS'
     - name: Install tox
       run: python -m pip install tox
     - name: Run tox
