@@ -150,8 +150,8 @@ class TestMkpkg(TestCase):
                 GIT_COMMITTER_NAME="mkpkg unittests",
                 GIT_COMMITTER_EMAIL="mkpkg-unittests@local",
             ),
+            capture_output=True,
             check=True,
-            stderr=subprocess.STDOUT,
         )
         return Path(directory.name)
 
