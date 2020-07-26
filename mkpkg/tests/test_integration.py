@@ -14,22 +14,22 @@ class TestMkpkg(TestCase):
     def test_it_creates_packages_that_pass_their_tests(self):
         root = self.mkpkg("foo")
         _fix_readme(root / "foo")
-        self.tox(root / "foo", "--skip-missing-interpreters")
+        self.assertToxSucceeds(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_packages_with_docs_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--docs")
         _fix_readme(root / "foo")
-        self.tox(root / "foo", "--skip-missing-interpreters")
+        self.assertToxSucceeds(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_single_modules_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--single")
         _fix_readme(root / "foo")
-        self.tox(root / "foo", "--skip-missing-interpreters")
+        self.assertToxSucceeds(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_cffi_packages_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--cffi")
         _fix_readme(root / "foo")
-        self.tox(root / "foo", "--skip-missing-interpreters")
+        self.assertToxSucceeds(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_clis(self):
         foo = self.mkpkg("foo", "--cli", "bar") / "foo"
@@ -137,6 +137,18 @@ class TestMkpkg(TestCase):
         root = self.mkpkg("foo", "--no-style")
         envlist = self.tox(root / "foo", "-l").stdout
         self.assertNotIn(b"style", envlist)
+
+    def assertToxSucceeds(self, *args, **kwargs):
+        try:
+            self.tox(*args, **kwargs)
+        except subprocess.CalledProcessError as error:
+            if error.stdout:
+                sys.stdout.buffer.write(b"\nStdout:\n\n")
+                sys.stdout.buffer.write(error.stdout)
+            if error.stderr:
+                sys.stderr.buffer.write(b"\nStderr:\n\n")
+                sys.stderr.buffer.write(error.stderr)
+            self.fail(error)
 
     def mkpkg(self, *argv):
         directory = TemporaryDirectory()
