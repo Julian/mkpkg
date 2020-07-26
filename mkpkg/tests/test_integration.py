@@ -172,6 +172,7 @@ class TestMkpkg(TestCase):
             [
                 sys.executable, "-m", "tox",
                 "-c", str(path / "tox.ini"),
+                "-p", "auto",
                 "--workdir", str(path / "tox-work-dir"),
             ] + list(argv),
             check=True,
