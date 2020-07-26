@@ -141,7 +141,7 @@ class TestMkpkg(TestCase):
     def mkpkg(self, *argv):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)
-        subprocess.check_call(
+        subprocess.run(
             [sys.executable, "-m", "mkpkg"] + list(argv),
             cwd=directory.name,
             env=dict(
@@ -150,6 +150,7 @@ class TestMkpkg(TestCase):
                 GIT_COMMITTER_NAME="mkpkg unittests",
                 GIT_COMMITTER_EMAIL="mkpkg-unittests@local",
             ),
+            check=True,
             stderr=subprocess.STDOUT,
         )
         return Path(directory.name)
