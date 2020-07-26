@@ -87,7 +87,7 @@ class TestMkpkg(TestCase):
         self.assertFalse((root / "foo" / ".git").is_dir())
 
     def test_default_tox_envs(self):
-        envlist = self.tox(self.mkpkg("foo") / "foo", "-l")
+        envlist = self.tox(self.mkpkg("foo") / "foo", "-l").stdout
         self.assertEqual(
             set(envlist.splitlines()),
             {
@@ -103,7 +103,7 @@ class TestMkpkg(TestCase):
         )
 
     def test_docs_tox_envs(self):
-        envlist = self.tox(self.mkpkg("foo", "--docs") / "foo", "-l")
+        envlist = self.tox(self.mkpkg("foo", "--docs") / "foo", "-l").stdout
         self.assertEqual(
             set(envlist.splitlines()),
             {
@@ -125,17 +125,17 @@ class TestMkpkg(TestCase):
 
     def test_it_runs_style_checks_by_default(self):
         root = self.mkpkg("foo")
-        envlist = self.tox(root / "foo", "-l")
+        envlist = self.tox(root / "foo", "-l").stdout
         self.assertIn(b"style", envlist)
 
     def test_it_runs_style_checks_when_explicitly_asked(self):
         root = self.mkpkg("foo", "--style")
-        envlist = self.tox(root / "foo", "-l")
+        envlist = self.tox(root / "foo", "-l").stdout
         self.assertIn(b"style", envlist)
 
     def test_it_skips_style_checks_when_asked(self):
         root = self.mkpkg("foo", "--no-style")
-        envlist = self.tox(root / "foo", "-l")
+        envlist = self.tox(root / "foo", "-l").stdout
         self.assertNotIn(b"style", envlist)
 
     def mkpkg(self, *argv):
@@ -156,26 +156,30 @@ class TestMkpkg(TestCase):
         return Path(directory.name)
 
     def tox(self, path, *argv):
-        return subprocess.check_output(
+        return subprocess.run(
             [
                 sys.executable, "-m", "tox",
                 "-c", str(path / "tox.ini"),
                 "--workdir", str(path / "tox-work-dir"),
             ] + list(argv),
-            stderr=subprocess.STDOUT,
+            check=True,
+            capture_output=True,
         )
 
     def venv(self, package):
         venv = package / "venv"
-        subprocess.check_call(
-            [sys.executable, "-m", "virtualenv", str(venv)],
+        subprocess.run(
+            [sys.executable, "-m", "virtualenv", "--quiet", str(venv)],
+            check=True,
         )
-        subprocess.check_call(
+        subprocess.run(
             [
                 str(venv / "bin" / "python"), "-m", "pip",
                 "install",
+                "--quiet",
                 str(package),
-            ]
+            ],
+            check=True,
         )
         return venv
 
