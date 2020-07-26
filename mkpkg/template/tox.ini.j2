@@ -66,7 +66,7 @@ commands = {envbindir}/detect-secrets scan {toxinidir}
 [testenv:style]
 deps = flake8
 commands =
-    {envpython} -m flake8 {posargs} --max-complexity 10 {{ tests }}{% if cffi %} {toxinidir}/setup.py{% endif %}{% if docs %} {toxinidir}/docs
+    {envpython} -m flake8 {posargs} --max-complexity 10 {{ style_paths | join(' ') }}{% if cffi %} {toxinidir}/setup.py{% endif %}{% if docs %} {toxinidir}/docs
 {% for each in ["dirhtml", "doctest", "linkcheck", "spelling"] -%}
 
 [testenv:docs-{{ each }}]

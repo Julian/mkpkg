@@ -198,10 +198,12 @@ def main(
             console_scripts = []
             script = u""
 
+        script_name = package_name + ".py"
         core_source_paths = {
-            package_name + ".py": script,
+            script_name: script,
             "tests.py": env.get_template("tests.py.j2").render(),
         }
+        style_paths = ["{toxinidir}/" + script_name, tests]
 
     else:
         tests = package_name
@@ -212,6 +214,7 @@ def main(
                 "package/__init__.py.j2",
             ).render(),
         }
+        style_paths = ["{toxinidir}/" + package_name]
 
         if cffi:
             core_source_paths[package / "_build.py"] = env.get_template(
@@ -278,6 +281,7 @@ def main(
         "tox.ini": env.get_template("tox.ini.j2").render(
             test_deps=TEST_DEPS[test_runner],
             tests=tests,
+            style_paths=style_paths,
         ),
         ".testr.conf": template(".testr.conf"),
     }
