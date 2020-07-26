@@ -85,7 +85,7 @@ def dedented(*args, **kwargs):
     "--supports",
     multiple=True,
     type=click.Choice(sorted(VERSION_CLASSIFIERS)),
-    default=["py36", "py37", "py38", "pypy2", "pypy3"],
+    default=["py37", "py38", "pypy3"],
     help="a version of Python supported by the package",
 )
 @click.option(
