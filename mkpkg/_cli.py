@@ -337,6 +337,11 @@ def main(
                 str(root / "docs"),
             ],
         )
+
+        # Fix sphinx-quickstart not writing a trailing newline.
+        with root.joinpath("docs", "conf.py").open("a") as file:
+            file.write("\n")
+
         (root / "docs" / "index.rst").write_text(template("docs", "index.rst"))
 
         click.echo(f"Set up documentation at: {READTHEDOCS_IMPORT_URL}")
