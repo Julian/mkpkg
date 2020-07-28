@@ -162,7 +162,7 @@ class TestMkpkg(TestCase):
                 GIT_COMMITTER_NAME="mkpkg unittests",
                 GIT_COMMITTER_EMAIL="mkpkg-unittests@local",
             ),
-            capture_output=True,
+            stdout=subprocess.DEVNULL,
             check=True,
         )
         return Path(directory.name)
