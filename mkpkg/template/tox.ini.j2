@@ -70,7 +70,7 @@ commands =
 {%- for each in ["dirhtml", "doctest", "linkcheck", "spelling"] %}
 
 [testenv:docs-{{ each }}]
-commands = {envpython} -m sphinx -b {{ each }} {toxinidir}/docs/ {envtmpdir}/build {posargs:-a -n -q -T -W}
+commands = {envpython} -m sphinx -b {{ each }} {toxinidir}/docs/ {envtmpdir}/build {posargs:-a -n {% if each != 'spelling' %}-q {% endif %}-T -W}
 deps =
     -r{toxinidir}/docs/requirements.txt
 {%- endfor %}
