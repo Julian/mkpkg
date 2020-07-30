@@ -17,9 +17,9 @@ class TestMkpkg(TestCase):
         self.assertToxSucceeds(root / "foo", "--skip-missing-interpreters")
 
     def test_it_creates_packages_with_docs_that_pass_their_tests(self):
-        root = self.mkpkg("foo", "--docs")
-        _fix_readme(root / "foo")
-        self.assertToxSucceeds(root / "foo", "--skip-missing-interpreters")
+        root = self.mkpkg("mkpkg", "--docs")
+        _fix_readme(root / "mkpkg")
+        self.assertToxSucceeds(root / "mkpkg", "--skip-missing-interpreters")
 
     def test_it_creates_single_modules_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--single")
