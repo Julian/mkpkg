@@ -67,13 +67,13 @@ commands = {envbindir}/detect-secrets scan {toxinidir}
 deps = flake8
 commands =
     {envpython} -m flake8 {posargs} --max-complexity 10 {{ style_paths | join(' ') }}{% if cffi %} {toxinidir}/setup.py{% endif %}{% if docs %} {toxinidir}/docs
-{% for each in ["dirhtml", "doctest", "linkcheck", "spelling"] -%}
+{%- for each in ["dirhtml", "doctest", "linkcheck", "spelling"] %}
 
 [testenv:docs-{{ each }}]
 commands = {envpython} -m sphinx -b {{ each }} {toxinidir}/docs/ {envtmpdir}/build {posargs:-a -n -q -T -W}
 deps =
     -r{toxinidir}/docs/requirements.txt
-{% endfor %}
+{%- endfor %}
 
 [testenv:docs-style]
 commands = doc8 {posargs} {toxinidir}/docs
@@ -81,7 +81,7 @@ deps =
     doc8
     pygments
     pygments-github-lexers
-{% endif %}
+{%- endif %}
 {% if not closed %}
 [testenv:codecov]
 passenv = CODECOV* CI
