@@ -3,15 +3,14 @@ from pathlib import Path
 from textwrap import dedent
 import os
 import pwd
-import sys
 import subprocess
+import sys
 import textwrap
 
 import click
 import jinja2
 
 from mkpkg import __version__
-
 
 STATUS_CLASSIFIERS = {
     "planning": "Development Status :: 1 - Planning",

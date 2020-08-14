@@ -8,7 +8,6 @@
 
 import re
 
-
 # -- Project information -----------------------------------------------------
 
 project = u"mkpkg"
