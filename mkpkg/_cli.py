@@ -10,8 +10,6 @@ import textwrap
 import click
 import jinja2
 
-from mkpkg import __version__
-
 STATUS_CLASSIFIERS = {
     "planning": "Development Status :: 1 - Planning",
     "prealpha": "Development Status :: 2 - Pre-Alpha",
@@ -133,7 +131,7 @@ def dedented(*args, **kwargs):
     default=False,
     help="create a closed source package.",
 )
-@click.version_option(prog_name="mkpkg", version=__version__)
+@click.version_option(prog_name="mkpkg")
 def main(
     name,
     author,
