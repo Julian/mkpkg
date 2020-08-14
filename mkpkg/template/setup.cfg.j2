@@ -42,10 +42,9 @@ classifiers =
 py_modules = {{ name }}
 {% else -%}
 packages = find:
-{% endif -%}
-install_requires = {% if cffi %}
+{% endif -%}{% if cffi %}
+install_requires =
     cffi>=1.0.0 {% endif %}
-    importlib_metadata; python_version < '3.8'
 {%- if console_scripts %}
     click
 
