@@ -35,6 +35,7 @@ VERSION_CLASSIFIERS = {
 TEST_DEPS = {
     "pytest": ["pytest"],
     "twisted.trial": ["twisted"],
+    "virtue": ["virtue"],
 }
 TEMPLATE = Path(__file__).with_name("template")
 
@@ -73,8 +74,8 @@ def dedented(*args, **kwargs):
 @click.option(
     "-t",
     "--test-runner",
-    default="twisted.trial",
-    type=click.Choice(["pytest", "twisted.trial"]),
+    default="virtue",
+    type=click.Choice(TEST_DEPS.keys()),
     help="the test runner to use",
 )
 @click.option(
