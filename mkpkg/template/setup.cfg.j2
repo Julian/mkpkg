@@ -38,27 +38,24 @@ classifiers =
     Programming Language :: Python :: Implementation :: Jython
     {% endif %}
 [options]
-{% if single_module -%}
-py_modules = {{ name }}
-{% else -%}
-packages = find:
-{% endif -%}{% if cffi %}
+{% if single_module %}py_modules = {{ name }}{% else %}packages = find:{% endif %}
+{% for each in install_requires -%}
+{% if loop.first -%}
 install_requires =
-    cffi>=1.0.0 {% endif %}
-{%- if console_scripts %}
-    click
-
+{%- endif %}
+    {{ each }}
+{% endfor %}
+{% for each in console_scripts -%}
+{% if loop.first -%}
 [options.entry_points]
 console_scripts =
-  {%- for each in console_scripts %}
-    {{ each }}
-  {%- endfor %}
 {%- endif %}
+    {{ each }}
+{% endfor %}
+[bdist_wheel]
+universal = 1
 {%- if not single_module %}
 
 [flake8]
 exclude = {{ package_name }}/__init__.py
 {%- endif %}
-
-[bdist_wheel]
-universal = 1

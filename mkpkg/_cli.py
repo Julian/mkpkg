@@ -240,6 +240,12 @@ def main(
                 ) for each in cli
             )
 
+    install_requires = []
+    if cffi:
+        install_requires.append("cffi>=1.0.0")
+    if console_scripts:
+        install_requires.append("click")
+
     files = {
         "README.rst": env.get_template("README.rst.j2").render(
             contents=readme,
@@ -248,6 +254,7 @@ def main(
         "MANIFEST.in": template("MANIFEST.in"),
         "pyproject.toml": env.get_template("pyproject.toml.j2").render(),
         "setup.cfg": env.get_template("setup.cfg.j2").render(
+            install_requires=install_requires,
             console_scripts=console_scripts,
             author_email=(
                 author_email or u"Julian+" + package_name + u"@GrayVines.com"
