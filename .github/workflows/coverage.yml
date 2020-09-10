@@ -20,7 +20,7 @@ jobs:
     - name: Install tox
       run: python -m pip install tox
     - name: Collect & Upload Coverage
-      run: python -m tox -e codecov
+      run: python -m tox -e py38-codecov
       env:
         CODECOV_TOKEN: de12a2a0-8dc0-4f1c-9c3c-929f46d0106b
         LANG: C.UTF-8
