@@ -1,40 +1,42 @@
 [tox]
 envlist =
-    {% for env in supports | sort -%}
-    {{ env }}
-    {% endfor -%}
-    build
+    {{ '{' }}{{ supports | sort | join(',') }}{{ '}' }}-{build,safety,tests}
     readme
-    safety
     secrets
     {% if style -%}style{%- endif %}
     {% if docs -%}docs-{dirhtml,doctest,linkcheck,spelling,style}{%- endif %}
 skipsdist = True
 
 [testenv]
+passenv = {% if not closed %}CODECOV* CI{% endif %}
 setenv =
+    coverage{% if not closed %},codecov{% endif %}: MAYBE_COVERAGE = coverage run -m
+    coverage{% if not closed %},codecov{% endif %}: COVERAGE_RCFILE={toxinidir}/.coveragerc
+    coverage{% if not closed %},codecov{% endif %}: COVERAGE_DEBUG_FILE={envtmpdir}/coverage-debug
+    coverage{% if not closed %},codecov{% endif %}: COVERAGE_FILE={envtmpdir}/coverage-data
 changedir = {envtmpdir}
 args_are_paths = false
 commands =
     {envpython} -m pip install {toxinidir}
-    {envpython} -m {{ test_runner }} {posargs:{{ tests }}}
-    {envpython} -m doctest {toxinidir}/README.rst
-deps =
-    {% for each in test_deps -%}
-    {{ each }}
-    {%- endfor %}
-    {% if not closed %}codecov,{% endif %}coverage: coverage
-    {% if not closed %}codecov: codecov{%- endif %}
 
-[testenv:coverage]
-setenv =
-    {[testenv]setenv}
-    COVERAGE_FILE={envtmpdir}/coverage-data
-commands =
-    {envpython} -m pip install {toxinidir}
-    {envpython} -m coverage run --rcfile={toxinidir}/.coveragerc -m {{ test_runner }} {{ tests }}
-    {envpython} -m coverage html --directory={envtmpdir}/htmlcov --rcfile={toxinidir}/.coveragerc {posargs}
-    {envpython} -m coverage report --rcfile={toxinidir}/.coveragerc --show-missing
+    safety: {envpython} -m safety check
+
+    tests,coverage{% if not closed %},codecov{% endif %}: {envpython} -m {env:MAYBE_COVERAGE:} {{ test_runner }} {posargs:{{ tests }}}
+    tests: {envpython} -m doctest {toxinidir}/README.rst
+
+    coverage: {envpython} -m coverage report --show-missing
+    coverage: {envpython} -m coverage html --directory={envtmpdir}/htmlcov
+    {% if not closed %}
+    codecov: {envpython} -m coverage xml -o {envtmpdir}/coverage.xml
+    codecov: codecov --required --disable gcov --file {envtmpdir}/coverage.xml
+    {%- endif %}
+deps =
+    safety: safety
+    {% for each in test_deps -%}
+    tests,coverage{% if not closed %},codecov{% endif %}: {{ each }}
+    {%- endfor %}
+    coverage{% if not closed %},codecov{% endif %}: coverage
+    {% if not closed %}codecov: codecov{%- endif %}
 
 [testenv:build]
 deps = build
@@ -51,12 +53,6 @@ deps =
 commands =
     {envpython} -m build --outdir {envtmpdir}/dist {toxinidir}
     {envpython} -m twine check {envtmpdir}/dist/*
-
-[testenv:safety]
-deps = safety
-commands =
-    {envpython} -m pip install {toxinidir}
-    {envpython} -m safety check
 
 [testenv:secrets]
 deps = detect-secrets
@@ -80,17 +76,4 @@ deps =
     doc8
     pygments
     pygments-github-lexers
-{%- endif %}
-{% if not closed %}
-[testenv:codecov]
-passenv = CODECOV* CI
-setenv =
-    {[testenv]setenv}
-    COVERAGE_DEBUG_FILE={envtmpdir}/coverage-debug
-    COVERAGE_FILE={envtmpdir}/coverage-data
-commands =
-    {envpython} -m pip install {toxinidir}
-    {envpython} -m coverage run --rcfile={toxinidir}/.coveragerc -m {{ test_runner }} {{ tests }}
-    {envpython} -m coverage xml -o {envtmpdir}/coverage.xml
-    {envpython} -m codecov --required --disable gcov --file {envtmpdir}/coverage.xml
 {%- endif %}
