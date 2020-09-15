@@ -54,8 +54,3 @@ console_scripts =
 {% endfor %}
 [bdist_wheel]
 universal = 1
-{%- if not single_module %}
-
-[flake8]
-exclude = {{ package_name }}/__init__.py
-{%- endif %}
