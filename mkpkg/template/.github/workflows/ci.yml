@@ -41,7 +41,6 @@ jobs:
             toxenv: secrets
           - name: 3.8
             toxenv: style
-          - name: 3.8
 
     steps:
     - uses: actions/checkout@v2
