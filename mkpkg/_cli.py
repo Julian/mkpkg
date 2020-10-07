@@ -29,6 +29,7 @@ VERSION_CLASSIFIERS = {
     "py37": "Programming Language :: Python :: 3.7",
     "py38": "Programming Language :: Python :: 3.8",
     "py39": "Programming Language :: Python :: 3.9",
+    "py310": "Programming Language :: Python :: 3.10",
 
     "jython": "Programming Language :: Python :: 2.7",
 }
@@ -83,7 +84,7 @@ def dedented(*args, **kwargs):
     "--supports",
     multiple=True,
     type=click.Choice(sorted(VERSION_CLASSIFIERS)),
-    default=["py37", "py38", "pypy3"],
+    default=["py37", "py38", "py39", "pypy3"],
     help="a version of Python supported by the package",
 )
 @click.option(

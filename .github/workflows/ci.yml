@@ -35,21 +35,27 @@ jobs:
             toxenv: py38-safety
           - name: 3.8
             toxenv: py38-tests
-          - name: 3.8
+          - name: 3.9
+            toxenv: py39-build
+          - name: 3.9
+            toxenv: py39-safety
+          - name: 3.9
+            toxenv: py39-tests
+          - name: 3.9
             toxenv: readme
-          - name: 3.8
+          - name: 3.9
             toxenv: secrets
-          - name: 3.8
+          - name: 3.9
             toxenv: style
-          - name: 3.8
+          - name: 3.9
             toxenv: docs-dirhtml
-          - name: 3.8
+          - name: 3.9
             toxenv: docs-doctest
-          - name: 3.8
+          - name: 3.9
             toxenv: docs-linkcheck
-          - name: 3.8
+          - name: 3.9
             toxenv: docs-spelling
-          - name: 3.8
+          - name: 3.9
             toxenv: docs-style
 
     steps:
