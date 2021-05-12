@@ -17,11 +17,11 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest]
         python-version:
-          - name: pypy3
+          - name: pypy-3.7
             toxenv: pypy3-build
-          - name: pypy3
+          - name: pypy-3.7
             toxenv: pypy3-safety
-          - name: pypy3
+          - name: pypy-3.7
             toxenv: pypy3-tests
           - name: 3.7
             toxenv: py37-build
