@@ -6,18 +6,19 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
+import importlib.metadata
 import re
 
 # -- Project information -----------------------------------------------------
 
-project = u"mkpkg"
-copyright = u"2019, Julian Berman"
-author = u"Julian Berman"
+project = "mkpkg"
+author = "Julian Berman"
+copyright = "2019, " + author
 
-# The short X.Y version
-version = u""
-# The full version, including alpha/beta/rc tags
-release = u""
+# version: The short X.Y version
+# release: The full version, including alpha/beta/rc tags.
+release = importlib.metadata.version("mkpkg")
+version = release.partition("-")[0]
 
 
 # -- General configuration ---------------------------------------------------
@@ -25,6 +26,8 @@ release = u""
 # If your documentation needs a minimal Sphinx version, state it here.
 #
 # needs_sphinx = "1.0"
+
+default_role = "any"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
@@ -65,7 +68,7 @@ language = None
 exclude_patterns = [u"_build", "_static", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = "sphinx"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -73,7 +76,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "alabaster"
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -131,7 +134,7 @@ latex_documents = [
         master_doc,
         "mkpkg.tex",
         u"mkpkg Documentation",
-        u"Julian Berman",
+        author,
         "manual",
     ),
 ]
@@ -142,7 +145,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, "mkpkg", u"mkpkg Documentation", [author], 1),
+    (
+        master_doc,
+        "mkpkg",
+        "mkpkg Documentation",
+        [author],
+        1,
+    ),
 ]
 
 
@@ -155,10 +164,10 @@ texinfo_documents = [
     (
         master_doc,
         "mkpkg",
-        u"mkpkg Documentation",
+        "mkpkg Documentation",
         author,
         "mkpkg",
-        "One line description of project.",
+        "",
         "Miscellaneous",
     ),
 ]
