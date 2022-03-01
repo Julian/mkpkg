@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v3
     - uses: pre-commit/action@v2.0.3
 
   ci:
@@ -74,7 +74,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version.name }}
     - name: Ensure we have new enough versions to respect python_version
@@ -99,7 +99,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: "3.10"
     - name: Install dependencies
