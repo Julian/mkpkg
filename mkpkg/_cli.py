@@ -291,6 +291,7 @@ def main(
             tests=tests,
             style_paths=style_paths,
         ),
+        ".flake8": template(".flake8"),
         ".testr.conf": template(".testr.conf"),
     }
 
