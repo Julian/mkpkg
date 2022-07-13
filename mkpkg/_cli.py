@@ -191,12 +191,12 @@ def main(
         if len(cli) > 1:
             sys.exit("Cannot create a single module with multiple CLIs.")
         elif cli:
-            console_scripts = [f"{cli[0]} = {package_name}:main"]
+            scripts = [f'{cli[0]} = "{package_name}:main"']
             script = env.get_template("package/_cli.py.j2").render(
                 program_name=cli[0],
             )
         else:
-            console_scripts = []
+            scripts = []
             script = u""
 
         script_name = package_name + ".py"
@@ -223,7 +223,7 @@ def main(
             ).render(cname=_cname(name))
 
         if len(cli) == 1:
-            console_scripts = [f"{cli[0]} = {package_name}._cli:main"]
+            scripts = [f'{cli[0]} = "{package_name}._cli:main"']
             core_source_paths[package / "_cli.py"] = env.get_template(
                 "package/_cli.py.j2",
             ).render(program_name=cli[0])
@@ -231,8 +231,8 @@ def main(
                 "package/__main__.py.j2",
             ).render()
         else:
-            console_scripts = [
-                f"{each} = {package_name}._{each}:main" for each in cli
+            scripts = [
+                f'{each} = "{package_name}._{each}:main"' for each in cli
             ]
             core_source_paths.update(
                 (
@@ -243,22 +243,20 @@ def main(
                 ) for each in cli
             )
 
-    install_requires = []
+    dependencies = []
     if cffi:
-        install_requires.append("cffi>=1.0.0")
-    if console_scripts:
-        install_requires.append("click")
+        dependencies.append("cffi>=1.0.0")
+    if scripts:
+        dependencies.append("click")
 
     files = {
         "README.rst": env.get_template("README.rst.j2").render(
             contents=readme,
         ),
         "COPYING": env.get_template("COPYING.j2").render(),
-        "MANIFEST.in": template("MANIFEST.in"),
-        "pyproject.toml": env.get_template("pyproject.toml.j2").render(),
-        "setup.cfg": env.get_template("setup.cfg.j2").render(
-            install_requires=install_requires,
-            console_scripts=console_scripts,
+        "pyproject.toml": env.get_template("pyproject.toml.j2").render(
+            dependencies=dependencies,
+            scripts=scripts,
             author_email=(
                 author_email or u"Julian+" + package_name + u"@GrayVines.com"
             ),
@@ -294,9 +292,6 @@ def main(
         ".flake8": template(".flake8"),
         ".testr.conf": template(".testr.conf"),
     }
-
-    if cffi:
-        files["setup.py"] = env.get_template("setup.py.j2").render()
 
     if not closed:
         for each in (TEMPLATE / ".github" / "workflows").iterdir():
