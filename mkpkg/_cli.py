@@ -317,8 +317,8 @@ def main(
 
     if docs:
         (root / "docs").mkdir()
-        (root / "docs" / "requirements.txt").write_text(
-            template("docs", "requirements.txt"),
+        (root / "docs" / "requirements.in").write_text(
+            template("docs", "requirements.in"),
         )
 
         subprocess.check_call(
