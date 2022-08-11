@@ -160,7 +160,7 @@ def main(
     if name.startswith("python-"):
         package_name = name[len("python-"):]
     elif name.endswith(".py"):
-        package_name = name[:len(".py")]
+        package_name = name[:-len(".py")]
     else:
         package_name = name
     package_name = package_name.lower().replace("-", "_")
