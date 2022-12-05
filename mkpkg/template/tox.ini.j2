@@ -1,6 +1,6 @@
 [tox]
 envlist =
-    {{ '{' }}{{ supports | sort | join(',') }}{{ '}' }}-{build,safety,tests}
+    {{ '{' }}{{ supports | sort | join(',') }}{{ '}' }}-{build,audit,tests}
     readme
     secrets
     {% if style -%}style{%- endif %}
@@ -19,7 +19,7 @@ args_are_paths = false
 commands =
     {envpython} -m pip install {toxinidir}
 
-    safety: {envpython} -m safety check
+    audit: {envpython} -m pip_audit
 
     tests,coverage{% if not closed %},codecov{% endif %}: {envpython} -m {env:MAYBE_COVERAGE:} {{ test_runner }} {posargs:{{ tests }}}
     tests: {envpython} -m doctest {toxinidir}/README.rst
@@ -31,7 +31,7 @@ commands =
     codecov: codecov --required --disable gcov --file {envtmpdir}/coverage.xml
     {%- endif %}
 deps =
-    safety: safety
+    audit: pip-audit
     {% for each in test_deps -%}
     tests,coverage{% if not closed %},codecov{% endif %}: {{ each }}
     {%- endfor %}

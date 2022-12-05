@@ -29,31 +29,31 @@ jobs:
           - name: pypy-3.8
             toxenv: pypy3-build
           - name: pypy-3.8
-            toxenv: pypy3-safety
+            toxenv: pypy3-audit
           - name: pypy-3.8
             toxenv: pypy3-tests
           - name: 3.7
             toxenv: py37-build
           - name: 3.7
-            toxenv: py37-safety
+            toxenv: py37-audit
           - name: 3.7
             toxenv: py37-tests
           - name: 3.8
             toxenv: py38-build
           - name: 3.8
-            toxenv: py38-safety
+            toxenv: py38-audit
           - name: 3.8
             toxenv: py38-tests
           - name: 3.9
             toxenv: py39-build
           - name: 3.9
-            toxenv: py39-safety
+            toxenv: py39-audit
           - name: 3.9
             toxenv: py39-tests
           - name: "3.10"
             toxenv: py310-build
           - name: "3.10"
-            toxenv: py310-safety
+            toxenv: py310-audit
           - name: "3.10"
             toxenv: py310-tests
           - name: "3.10"
