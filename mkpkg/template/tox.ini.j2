@@ -8,39 +8,32 @@ envlist =
 skipsdist = True
 
 [testenv]
-passenv = {% if not closed %}CODECOV* CI{% endif %}
-setenv =
-    coverage{% if not closed %},codecov{% endif %}: MAYBE_COVERAGE = coverage run -m
-    coverage{% if not closed %},codecov{% endif %}: COVERAGE_RCFILE={toxinidir}/.coveragerc
-    coverage{% if not closed %},codecov{% endif %}: COVERAGE_DEBUG_FILE={envtmpdir}/coverage-debug
-    coverage{% if not closed %},codecov{% endif %}: COVERAGE_FILE={envtmpdir}/coverage-data
 changedir = {envtmpdir}
+passenv = CI, GITHUB_STEP_SUMMARY
+setenv =
+    coverage,ghcoverage: MAYBE_COVERAGE=coverage run -m
+    coverage,ghcoverage: COVERAGE_RCFILE={toxinidir}/.coveragerc
+    coverage,ghcoverage: COVERAGE_DEBUG_FILE={envtmpdir}/coverage-debug
+    coverage,ghcoverage: COVERAGE_FILE={envtmpdir}/coverage-data
 args_are_paths = false
 commands =
-    {envpython} -m pip install {toxinidir}
+    build: {envpython} -m build {toxinidir} --outdir {envtmpdir}/dist
+    !build: {envpython} -m pip install --disable-pip-version-check {toxinidir}
 
     audit: {envpython} -m pip_audit
 
-    tests,coverage{% if not closed %},codecov{% endif %}: {envpython} -m {env:MAYBE_COVERAGE:} {{ test_runner }} {posargs:{{ tests }}}
+    tests,coverage,ghcoverage: {envpython} -m {env:MAYBE_COVERAGE:} {{ test_runner }} {posargs:{{ tests }}}
     tests: {envpython} -m doctest {toxinidir}/README.rst
 
     coverage: {envpython} -m coverage report --show-missing
     coverage: {envpython} -m coverage html --directory={envtmpdir}/htmlcov
-    {% if not closed %}
-    codecov: {envpython} -m coverage xml -o {envtmpdir}/coverage.xml
-    codecov: codecov --required --disable gcov --file {envtmpdir}/coverage.xml
-    {%- endif %}
 deps =
     audit: pip-audit
+    build: build
     {% for each in test_deps -%}
-    tests,coverage{% if not closed %},codecov{% endif %}: {{ each }}
+    tests,coverage,ghcoverage: {{ each }}
     {%- endfor %}
-    coverage{% if not closed %},codecov{% endif %}: coverage
-    {% if not closed %}codecov: codecov{%- endif %}
-
-[testenv:build]
-deps = build
-commands = {envpython} -m build {toxinidir} --outdir {envtmpdir}/dist
+    coverage,ghcoverage: coverage
 
 [testenv:bandit]
 deps = bandit
@@ -77,7 +70,8 @@ deps =
 {%- endfor %}
 
 [testenv:docs-style]
-commands = doc8 {posargs} {toxinidir}/docs
+commands =
+  doc8 --max-line-length 1000 --ignore-path {toxinidir}/docs/requirements.txt {posargs} {toxinidir}/docs
 deps =
     doc8
     pygments
