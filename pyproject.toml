@@ -9,6 +9,7 @@ source = "vcs"
 name = "mkpkg"
 description = "A package @Julian uses to create Python packages."
 readme = "README.rst"
+requires-python = ">=3.8"
 license = {text = "MIT"}
 keywords = ["packaging", "templating"]
 authors = [
@@ -21,7 +22,6 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "License :: OSI Approved :: MIT License",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
