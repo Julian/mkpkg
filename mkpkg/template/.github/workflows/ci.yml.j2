@@ -21,11 +21,11 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: ${{{{ env.PYTHON_LATEST }}}}
+          python-version: {% raw %}${{ env.PYTHON_LATEST }}{% endraw %}
       - uses: pre-commit/action@v3.0.0
 
   ci:
-    runs-on: ${{{{ matrix.os }}}}
+    runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     strategy:
       fail-fast: false
       matrix:
@@ -73,7 +73,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{{{ matrix.python-version.name }}}}
+          python-version: {% raw %}${{ matrix.python-version.name }}{% endraw %}
       - name: Install dependencies
         run: sudo apt-get install -y libenchant-2-dev
         if: runner.os == 'Linux' && startsWith(matrix.python-version.toxenv, 'docs-')
@@ -83,7 +83,7 @@ jobs:
       - name: Install tox
         run: python -m pip install tox
       - name: Run tox
-        run: python -m tox -e "${{{{ matrix.python-version.toxenv }}}}"
+        run: python -m tox -e {% raw %}"${{ matrix.python-version.toxenv }}"{% endraw %}
 
   packaging:
     needs: ci
@@ -94,7 +94,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{{{ env.PYTHON_LATEST }}}}
+          python-version: {% raw %}${{ env.PYTHON_LATEST }}{% endraw %}
       - name: Install dependencies
         run: python -m pip install build
       - name: Create packages
@@ -107,14 +107,16 @@ jobs:
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{{{ secrets.pypi_password }}}}
+          password: {% raw %}${{ secrets.pypi_password }}{% endraw %}
       - name: Create Release Notes
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
         uses: actions/github-script@v6
         with:
-          github-token: ${{{{ secrets.GITHUB_TOKEN }}}}
+          github-token: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
+          {% raw %}
           script: |
-            await github.request(`POST /repos/${{{{ github.repository }}}}/releases`, {{
-              tag_name: "${{{{ github.ref }}}}",
+            await github.request(`POST /repos/${{ github.repository }}/releases`, {
+              tag_name: "${{ github.ref }}",
               generate_release_notes: true
-            }});
+            });
+          {% endraw %}
