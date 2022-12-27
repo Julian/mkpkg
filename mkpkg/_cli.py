@@ -1,5 +1,6 @@
 from datetime import datetime
 from pathlib import Path
+from random import randint
 from textwrap import dedent
 import os
 import pwd
@@ -294,8 +295,12 @@ def main(
     }
 
     if not closed:
-        for each in (TEMPLATE / ".github" / "workflows").iterdir():
-            files[".github/workflows/" + each.name] = each.read_text()
+        files[".github/workflows/ci.yml"] = env.get_template(
+            ".github/workflows/ci.yml.j2",
+        ).render(
+            schedule_hour=randint(3, 7),
+            schedule_minute=randint(0, 59),
+        )
         files[".github/dependabot.yml"] = template(".github/dependabot.yml")
         files[".github/FUNDING.yml"] = template(".github/FUNDING.yml")
         files[".github/SECURITY.md"] = env.get_template(
