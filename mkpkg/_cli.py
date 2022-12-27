@@ -22,7 +22,6 @@ STATUS_CLASSIFIERS = {
 VERSION_CLASSIFIERS = {
     "pypy2": "Programming Language :: Python :: 2.7",
     "pypy3": "Programming Language :: Python :: 3.8",
-
     "py27": "Programming Language :: Python :: 2.7",
     "py35": "Programming Language :: Python :: 3.5",
     "py36": "Programming Language :: Python :: 3.6",
@@ -32,7 +31,6 @@ VERSION_CLASSIFIERS = {
     "py310": "Programming Language :: Python :: 3.10",
     "py311": "Programming Language :: Python :: 3.11",
     "py312": "Programming Language :: Python :: 3.12",
-
     "jython": "Programming Language :: Python :: 2.7",
 }
 TEST_DEPS = {
@@ -157,9 +155,9 @@ def main(
     """
 
     if name.startswith("python-"):
-        package_name = name[len("python-"):]
+        package_name = name[len("python-") :]
     elif name.endswith(".py"):
-        package_name = name[:-len(".py")]
+        package_name = name[: -len(".py")]
     else:
         package_name = name
     package_name = package_name.lower().replace("-", "_")
@@ -187,7 +185,7 @@ def main(
     package = Path(package_name)
 
     if single_module:
-        tests = u"{toxinidir}/tests.py"
+        tests = "{toxinidir}/tests.py"
 
         if len(cli) > 1:
             sys.exit("Cannot create a single module with multiple CLIs.")
@@ -198,7 +196,7 @@ def main(
             )
         else:
             scripts = []
-            script = u""
+            script = ""
 
         script_name = package_name + ".py"
         core_source_paths = {
@@ -211,8 +209,9 @@ def main(
         tests = package_name
 
         core_source_paths = {
-            package / "tests" / "__init__.py": u"",
-            package / "__init__.py": env.get_template(
+            package / "tests" / "__init__.py": "",
+            package
+            / "__init__.py": env.get_template(
                 "package/__init__.py.j2",
             ).render(),
         }
@@ -241,7 +240,8 @@ def main(
                     env.get_template("package/_cli.py.j2").render(
                         program_name=each,
                     ),
-                ) for each in cli
+                )
+                for each in cli
             )
 
     dependencies = []
@@ -259,7 +259,7 @@ def main(
             dependencies=dependencies,
             scripts=scripts,
             author_email=(
-                author_email or u"Julian+" + package_name + u"@GrayVines.com"
+                author_email or "Julian+" + package_name + "@GrayVines.com"
             ),
             status_classifier=STATUS_CLASSIFIERS[status],
             version_classifiers={
@@ -268,13 +268,11 @@ def main(
                 if each in VERSION_CLASSIFIERS
             },
             py2=any(
-                version.startswith("py2")
-                or version in {"jython", "pypy2"}
+                version.startswith("py2") or version in {"jython", "pypy2"}
                 for version in supports
             ),
             py3=any(
-                version.startswith("py3")
-                or version == "pypy3"
+                version.startswith("py3") or version == "pypy3"
                 for version in supports
             ),
             cpython=any(
@@ -291,6 +289,7 @@ def main(
             style_paths=style_paths,
         ),
         ".flake8": template(".flake8"),
+        ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
         ".testr.conf": template(".testr.conf"),
     }
 
@@ -324,18 +323,24 @@ def main(
         subprocess.check_call(
             [
                 sys.executable,
-                "-m", "sphinx.cmd.quickstart",
+                "-m",
+                "sphinx.cmd.quickstart",
                 "--quiet",
-                "--project", name,
-                "--author", author,
-                "--release", "",
+                "--project",
+                name,
+                "--author",
+                author,
+                "--release",
+                "",
                 "--ext-autodoc",
                 "--ext-coverage",
                 "--ext-doctest",
                 "--ext-intersphinx",
                 "--ext-viewcode",
-                "--extensions", "sphinx.ext.napoleon",
-                "--extensions", "sphinxcontrib.spelling",
+                "--extensions",
+                "sphinx.ext.napoleon",
+                "--extensions",
+                "sphinxcontrib.spelling",
                 "--makefile",
                 "--no-batchfile",
                 str(root / "docs"),
@@ -357,15 +362,23 @@ def main(
         subprocess.check_call(
             [
                 "git",
-                "--git-dir", str(git_dir),
-                "--work-tree", name,
-                "add", "COPYING",
-            ])
+                "--git-dir",
+                str(git_dir),
+                "--work-tree",
+                name,
+                "add",
+                "COPYING",
+            ]
+        )
         subprocess.check_call(
             [
                 "git",
-                "--git-dir", str(git_dir),
-                "commit", "--quiet", "-m", "Initial commit",
+                "--git-dir",
+                str(git_dir),
+                "commit",
+                "--quiet",
+                "-m",
+                "Initial commit",
             ],
         )
 
@@ -391,7 +404,7 @@ def template(*segments):
 
 def _cname(name):
     if name.endswith("-cffi"):
-        name = name[:-len("-cffi")]
+        name = name[: -len("-cffi")]
     if name.startswith("lib"):
-        name = name[len("lib"):]
+        name = name[len("lib") :]
     return "_" + name

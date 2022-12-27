@@ -190,11 +190,17 @@ class TestMkpkg(TestCase):
     def tox(self, path, *argv):
         return subprocess.run(
             [
-                sys.executable, "-m", "tox",
-                "-c", str(path / "tox.ini"),
-                "-p", "auto",
-                "--workdir", str(path / "tox-work-dir"),
-            ] + list(argv),
+                sys.executable,
+                "-m",
+                "tox",
+                "-c",
+                str(path / "tox.ini"),
+                "-p",
+                "auto",
+                "--workdir",
+                str(path / "tox-work-dir"),
+            ]
+            + list(argv),
             check=True,
             capture_output=True,
         )
@@ -207,7 +213,9 @@ class TestMkpkg(TestCase):
         )
         subprocess.run(
             [
-                str(venv / "bin" / "python"), "-m", "pip",
+                str(venv / "bin" / "python"),
+                "-m",
+                "pip",
                 "install",
                 "--quiet",
                 str(package),
@@ -220,4 +228,4 @@ class TestMkpkg(TestCase):
 def _fix_readme(path):
     # Just the heading on the readme isn't good enough...
     with (path / "README.rst").open("at") as readme:
-        readme.write(u"\n\nSome description.\n")
+        readme.write("\n\nSome description.\n")
