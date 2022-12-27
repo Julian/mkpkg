@@ -296,6 +296,7 @@ def main(
     if not closed:
         for each in (TEMPLATE / ".github" / "workflows").iterdir():
             files[".github/workflows/" + each.name] = each.read_text()
+        files[".github/dependabot.yml"] = template(".github/dependabot.yml")
         files[".github/FUNDING.yml"] = template(".github/FUNDING.yml")
         files[".github/SECURITY.md"] = env.get_template(
             ".github/SECURITY.md.j2",
