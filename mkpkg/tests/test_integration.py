@@ -91,9 +91,6 @@ class TestMkpkg(TestCase):
         self.assertEqual(
             set(envlist.splitlines()),
             {
-                b"py37-build",
-                b"py37-audit",
-                b"py37-tests",
                 b"py38-build",
                 b"py38-audit",
                 b"py38-tests",
@@ -120,9 +117,6 @@ class TestMkpkg(TestCase):
         self.assertEqual(
             set(envlist.splitlines()),
             {
-                b"py37-build",
-                b"py37-audit",
-                b"py37-tests",
                 b"py38-build",
                 b"py38-audit",
                 b"py38-tests",
