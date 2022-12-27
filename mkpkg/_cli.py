@@ -42,7 +42,6 @@ TEST_DEPS = {
 }
 TEMPLATE = Path(__file__).with_name("template")
 
-CODECOV_URL = "https://codecov.io/gh/Julian"
 PYPI_TOKEN_URL = "https://pypi.org/manage/account/token/"
 READTHEDOCS_IMPORT_URL = "https://readthedocs.org/dashboard/import/manual/"
 
@@ -302,7 +301,6 @@ def main(
         files[".github/SECURITY.md"] = env.get_template(
             ".github/SECURITY.md.j2",
         ).render()
-        files["codecov.yml"] = template("codecov.yml")
 
     root = Path(name)
     if bare:
@@ -379,7 +377,6 @@ def main(
 
                       * a PyPI token from {PYPI_TOKEN_URL} named
                         'GitHub Actions - {name}'
-                      * a CodeCov token from {CODECOV_URL}/{name}
 
                     and include them in the GitHub secrets at
                     https://github.com/Julian/{name}/settings/secrets
