@@ -197,10 +197,7 @@ class TestMkpkg(TestCase):
 
     def venv(self, package):
         venv = package / "venv"
-        subprocess.run(
-            [sys.executable, "-m", "virtualenv", "--quiet", str(venv)],
-            check=True,
-        )
+        subprocess.run([sys.executable, "-m", "venv", str(venv)], check=True)
         subprocess.run(
             [
                 str(venv / "bin" / "python"),
