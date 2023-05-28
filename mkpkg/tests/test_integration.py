@@ -1,8 +1,4 @@
-try:
-    from tempfile import TemporaryDirectory
-except Exception:
-    from backports.tempfile import TemporaryDirectory
-
+from tempfile import TemporaryDirectory
 from unittest import TestCase
 import subprocess
 import sys
