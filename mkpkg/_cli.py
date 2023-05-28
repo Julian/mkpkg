@@ -76,7 +76,7 @@ def dedented(*args, **kwargs):
     "-t",
     "--test-runner",
     default="virtue",
-    type=click.Choice(TEST_DEPS.keys()),
+    type=click.Choice(sorted(TEST_DEPS)),
     help="the test runner to use",
 )
 @click.option(
@@ -89,7 +89,7 @@ def dedented(*args, **kwargs):
 )
 @click.option(
     "--status",
-    type=click.Choice(STATUS_CLASSIFIERS),
+    type=click.Choice(list(STATUS_CLASSIFIERS)),
     default="alpha",
     help="the initial package development status",
 )
@@ -154,7 +154,6 @@ def main(
     """
     Oh how exciting! Create a new Python package.
     """
-
     if name.startswith("python-"):
         package_name = name[len("python-") :]
     elif name.endswith(".py"):
