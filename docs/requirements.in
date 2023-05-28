@@ -1,5 +1,6 @@
 file:.#egg=mkpkg
 furo
 pygments-github-lexers
-sphinx>3
+sphinx>5
 sphinxcontrib-spelling>5
+sphinxext-opengraph
