@@ -291,7 +291,6 @@ def main(
         ),
         ".flake8": template(".flake8"),
         ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
-        ".testr.conf": template(".testr.conf"),
     }
 
     if not closed:
