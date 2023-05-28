@@ -284,13 +284,12 @@ def main(
             jython="jython" in supports,
         ),
         ".coveragerc": env.get_template(".coveragerc.j2").render(),
+        ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
         "tox.ini": env.get_template("tox.ini.j2").render(
             test_deps=TEST_DEPS[test_runner],
             tests=tests,
             style_paths=style_paths,
         ),
-        ".flake8": template(".flake8"),
-        ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
     }
 
     if not closed:
