@@ -317,47 +317,6 @@ def main(
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(dedented(content))
 
-    if docs:
-        (root / "docs").mkdir()
-        (root / "docs" / "requirements.in").write_text(
-            template("docs", "requirements.in"),
-        )
-
-        subprocess.check_call(
-            [
-                sys.executable,
-                "-m",
-                "sphinx.cmd.quickstart",
-                "--quiet",
-                "--project",
-                name,
-                "--author",
-                author,
-                "--release",
-                "",
-                "--ext-autodoc",
-                "--ext-coverage",
-                "--ext-doctest",
-                "--ext-intersphinx",
-                "--ext-viewcode",
-                "--extensions",
-                "sphinx.ext.napoleon",
-                "--extensions",
-                "sphinxcontrib.spelling",
-                "--makefile",
-                "--no-batchfile",
-                str(root / "docs"),
-            ],
-        )
-
-        # Fix sphinx-quickstart not writing a trailing newline.
-        with root.joinpath("docs", "conf.py").open("a") as file:
-            file.write("\n")
-
-        (root / "docs" / "index.rst").write_text(template("docs", "index.rst"))
-
-        click.echo(f"Set up documentation at: {READTHEDOCS_IMPORT_URL}")
-
     if init_vcs and not bare:
         subprocess.check_call(["git", "init", "--quiet", name])
 
@@ -384,6 +343,32 @@ def main(
                 "Initial commit",
             ],
         )
+
+    if docs:
+        docs = root / "docs"
+        docs.mkdir()
+
+        requirements = env.get_template("docs/requirements.in.j2").render()
+        (docs / "requirements.in").write_text(requirements)
+        subprocess.check_call(
+            [
+                sys.executable,
+                "-m",
+                "piptools",
+                "compile",
+                "--quiet",
+                "--resolver",
+                "backtracking",
+                "-U",
+                str(docs.joinpath("requirements.in").absolute()),
+            ],
+            cwd=root.absolute(),
+        )
+        conf = env.get_template("docs/conf.py.j2").render()
+        (docs / "conf.py").write_text(conf)
+        (docs / "index.rst").write_text(template("docs/index.rst"))
+
+        click.echo(f"Set up documentation at: {READTHEDOCS_IMPORT_URL}")
 
         if not closed:
             click.echo(
