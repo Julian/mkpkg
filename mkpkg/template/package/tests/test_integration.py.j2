@@ -1,0 +1,6 @@
+from unittest import TestCase
+
+
+class Test{{ name | title }}(TestCase):
+    def test_it_imports(self):
+        import {{ package_name }}  # noqa: F401

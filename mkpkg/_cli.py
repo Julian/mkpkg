@@ -34,14 +34,13 @@ VERSION_CLASSIFIERS = {
     "py312": "Programming Language :: Python :: 3.12",
     "jython": "Programming Language :: Python :: 2.7",
 }
-TEST_DEPS = {
-    "pytest": ["pytest"],
-    "twisted.trial": ["twisted"],
-    "virtue": ["virtue"],
+TEST_DEP = {
+    "pytest": "pytest",
+    "twisted.trial": "twisted",
+    "virtue": "virtue",
 }
 TEMPLATE = Path(__file__).with_name("template")
 
-PYPI_TOKEN_URL = "https://pypi.org/manage/account/token/"
 READTHEDOCS_IMPORT_URL = "https://readthedocs.org/dashboard/import/manual/"
 
 
@@ -76,7 +75,7 @@ def dedented(*args, **kwargs):
     "-t",
     "--test-runner",
     default="virtue",
-    type=click.Choice(sorted(TEST_DEPS)),
+    type=click.Choice(sorted(TEST_DEP)),
     help="the test runner to use",
 )
 @click.option(
@@ -121,7 +120,7 @@ def dedented(*args, **kwargs):
     "--style/--no-style",
     "style",
     default=True,
-    help="(don't) run pyflakes by default in tox runs.",
+    help="(don't) run pyflakes by default in nox runs.",
 )
 @click.option(
     "--init-vcs/--no-init-vcs",
@@ -185,7 +184,7 @@ def main(
     package = Path(package_name)
 
     if single_module:
-        tests = "{toxinidir}/tests.py"
+        tests = "tests.py"
 
         if len(cli) > 1:
             sys.exit("Cannot create a single module with multiple CLIs.")
@@ -196,26 +195,24 @@ def main(
             )
         else:
             scripts = []
-            script = ""
+            script = '"""\nFill me in!\n"""\n'
 
         script_name = package_name + ".py"
         core_source_paths = {
             script_name: script,
             "tests.py": env.get_template("tests.py.j2").render(),
         }
-        style_paths = ["{toxinidir}/" + script_name, tests]
 
     else:
         tests = package_name
 
+        init, tests = package / "__init__.py", package / "tests"
+        integration = env.get_template("package/tests/test_integration.py.j2")
         core_source_paths = {
-            package / "tests" / "__init__.py": "",
-            package
-            / "__init__.py": env.get_template(
-                "package/__init__.py.j2",
-            ).render(),
+            init: env.get_template("package/__init__.py.j2").render(),
+            tests / "__init__.py": "",
+            tests / "test_integration.py": integration.render(),
         }
-        style_paths = ["{toxinidir}/" + package_name]
 
         if cffi:
             core_source_paths[package / "_build.py"] = env.get_template(
@@ -284,10 +281,9 @@ def main(
         ),
         ".coveragerc": env.get_template(".coveragerc.j2").render(),
         ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
-        "tox.ini": env.get_template("tox.ini.j2").render(
-            test_deps=TEST_DEPS[test_runner],
+        "noxfile.py": env.get_template("noxfile.py.j2").render(
+            test_dep=TEST_DEP[test_runner],
             tests=tests,
-            style_paths=style_paths,
         ),
     }
 
@@ -374,14 +370,14 @@ def main(
             click.echo(
                 dedent(
                     f"""
-                    Set up:
+                    Be sure to:
 
-                      * a PyPI token from {PYPI_TOKEN_URL} named
-                        'GitHub Actions - {name}'
-
-                    and include them in the GitHub secrets at
-                    https://github.com/Julian/{name}/settings/secrets
-                    """,
+                      * Fill in the description in the pyproject.toml and in
+                        the docstring for __init__.py
+                      * Set up a PyPI publisher from the appropriate PyPI page
+                        https://pypi.org/manage/project/{name}/settings/publishing/
+                        (named 'PyPI')
+                    """,  # noqa: E501
                 ),
             )
 

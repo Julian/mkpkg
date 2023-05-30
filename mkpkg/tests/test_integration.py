@@ -1,5 +1,7 @@
 from tempfile import TemporaryDirectory
 from unittest import TestCase
+import json
+import os
 import subprocess
 import sys
 
@@ -10,22 +12,22 @@ class TestMkpkg(TestCase):
     def test_it_creates_packages_that_pass_their_tests(self):
         root = self.mkpkg("foo")
         _fix_readme(root / "foo")
-        self.assertToxSucceeds(root / "foo", "--skip-missing-interpreters")
+        self.assertNoxSucceeds(root / "foo")
 
     def test_it_creates_packages_with_docs_that_pass_their_tests(self):
-        root = self.mkpkg("mkpkg", "--docs")
-        _fix_readme(root / "mkpkg")
-        self.assertToxSucceeds(root / "mkpkg", "--skip-missing-interpreters")
+        root = self.mkpkg("foo", "--docs")
+        _fix_readme(root / "foo")
+        self.assertNoxSucceeds(root / "foo")
 
     def test_it_creates_single_modules_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--single")
         _fix_readme(root / "foo")
-        self.assertToxSucceeds(root / "foo", "--skip-missing-interpreters")
+        self.assertNoxSucceeds(root / "foo")
 
     def test_it_creates_cffi_packages_that_pass_their_tests(self):
         root = self.mkpkg("foo", "--cffi")
         _fix_readme(root / "foo")
-        self.assertToxSucceeds(root / "foo", "--skip-missing-interpreters")
+        self.assertNoxSucceeds(root / "foo")
 
     def test_it_creates_clis(self):
         foo = self.mkpkg("foo", "--cli", "bar") / "foo"
@@ -82,75 +84,65 @@ class TestMkpkg(TestCase):
         root = self.mkpkg("foo", "--bare")
         self.assertFalse((root / "foo" / ".git").is_dir())
 
-    def test_default_tox_envs(self):
-        envlist = self.tox(self.mkpkg("foo") / "foo", "-l").stdout
+    def test_default_envs(self):
+        envlist = self.envs(self.mkpkg("foo") / "foo")
         self.assertEqual(
-            set(envlist.splitlines()),
+            envlist,
             {
-                b"py38-build",
-                b"py38-audit",
-                b"py38-tests",
-                b"py39-build",
-                b"py39-audit",
-                b"py39-tests",
-                b"py310-build",
-                b"py310-audit",
-                b"py310-tests",
-                b"py311-build",
-                b"py311-audit",
-                b"py311-tests",
-                b"pypy3-build",
-                b"pypy3-audit",
-                b"pypy3-tests",
-                b"readme",
-                b"secrets",
-                b"style",
+                "tests-3.8",
+                "tests-3.9",
+                "tests-3.10",
+                "tests-3.11",
+                "tests-pypy3",
+                "audit",
+                "build",
+                "readme",
+                "secrets",
+                "style",
+                "typing",
             },
         )
 
-    def test_docs_tox_envs(self):
-        envlist = self.tox(self.mkpkg("foo", "--docs") / "foo", "-l").stdout
+    def test_docs_envs(self):
+        envlist = self.envs(self.mkpkg("foo", "--docs") / "foo")
         self.assertEqual(
-            set(envlist.splitlines()),
+            envlist,
             {
-                b"py38-build",
-                b"py38-audit",
-                b"py38-tests",
-                b"py39-build",
-                b"py39-audit",
-                b"py39-tests",
-                b"pypy3-build",
-                b"pypy3-audit",
-                b"pypy3-tests",
-                b"readme",
-                b"secrets",
-                b"style",
-                b"docs-dirhtml",
-                b"docs-doctest",
-                b"docs-linkcheck",
-                b"docs-spelling",
-                b"docs-style",
+                "tests-3.8",
+                "tests-3.9",
+                "tests-3.10",
+                "tests-3.11",
+                "tests-pypy3",
+                "audit",
+                "build",
+                "readme",
+                "secrets",
+                "style",
+                "typing",
+                "docs(dirhtml)",
+                "docs(doctest)",
+                "docs(linkcheck)",
+                "docs(man)",
+                "docs(spelling)",
+                "docs(style)",
             },
         )
 
     def test_it_runs_style_checks_by_default(self):
-        root = self.mkpkg("foo")
-        envlist = self.tox(root / "foo", "-l").stdout
-        self.assertIn(b"style", envlist)
+        envlist = self.envs(self.mkpkg("foo") / "foo")
+        self.assertIn("style", envlist)
 
     def test_it_runs_style_checks_when_explicitly_asked(self):
-        root = self.mkpkg("foo", "--style")
-        envlist = self.tox(root / "foo", "-l").stdout
-        self.assertIn(b"style", envlist)
+        envlist = self.envs(self.mkpkg("foo", "--style") / "foo")
+        self.assertIn("style", envlist)
 
     def test_it_skips_style_checks_when_asked(self):
-        root = self.mkpkg("foo", "--no-style")
-        envlist = self.tox(root / "foo", "-l").stdout
-        self.assertNotIn(b"style", envlist)
+        envlist = self.envs(self.mkpkg("foo", "--no-style") / "foo")
+        self.assertNotIn("style", envlist)
 
-    def assertToxSucceeds(self, *args, **kwargs):
+    def assertNoxSucceeds(self, *args, **kwargs):
         try:
-            self.tox(*args, **kwargs)
+            self.nox(*args, **kwargs)
         except subprocess.CalledProcessError as error:
             if error.stdout:
                 sys.stdout.buffer.write(b"\nStdout:\n\n")
@@ -171,29 +163,32 @@ class TestMkpkg(TestCase):
                 GIT_AUTHOR_EMAIL="mkpkg-unittests@local",
                 GIT_COMMITTER_NAME="mkpkg unittests",
                 GIT_COMMITTER_EMAIL="mkpkg-unittests@local",
+                PATH=os.environ.get("PATH", ""),  # needed to find e.g. git
             ),
             stdout=subprocess.DEVNULL,
             check=True,
         )
         return Path(directory.name)
 
-    def tox(self, path, *argv):
+    def nox(self, path, *argv):
         return subprocess.run(
             [
                 sys.executable,
                 "-m",
-                "tox",
-                "-c",
-                str(path / "tox.ini"),
-                "-p",
-                "auto",
-                "--workdir",
-                str(path / "tox-work-dir"),
+                "nox",
+                "--noxfile",
+                str(path / "noxfile.py"),
+                "--envdir",
+                str(path / "nox-env-dir"),
             ]
             + list(argv),
             check=True,
             capture_output=True,
         )
+
+    def envs(self, path):
+        output = self.nox(path, "--list-sessions", "--json").stdout
+        return {each["session"] for each in json.loads(output)}
 
     def venv(self, package):
         venv = package / "venv"

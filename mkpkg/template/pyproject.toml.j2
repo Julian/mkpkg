@@ -86,8 +86,13 @@ multi_line_output = 3
 [tool.ruff]
 line-length = 79
 target-version = "py38"
-select = ["B", "D", "E", "F", "Q", "UP", "W"]
+select = ["ANN", "B", "D", "E", "F", "Q", "UP", "W"]
 ignore = [
+  # Wat, type annotations for self and cls, why is this a thing?
+  "ANN101",
+  "ANN102",
+  # Private annotations are fine to leave out.
+  "ANN202",
   # raise SomeException(...) is fine.
   "B904",
   # It's fine to not have docstrings for magic methods.
@@ -115,5 +120,5 @@ docstring-quotes = "double"
 
 [tool.ruff.per-file-ignores]
 "docs/*" = ["ANN", "D"]
-"{{ package_name }}/tests/*" = ["ANN", "D"]
+"{% if single_module %}tests.py{% else %}{{ package_name }}/tests/*{% endif %}" = ["ANN", "D"]
 "noxfile.py" = ["ANN", "D"]

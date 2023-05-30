@@ -23,70 +23,59 @@ jobs:
           python-version: "3.x"
       - uses: pre-commit/action@v3.0.0
 
+  list:
+    runs-on: ubuntu-latest
+    outputs:
+      noxenvs: {% raw %}${{ steps.noxenvs-matrix.outputs.noxenvs }}{% endraw %}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up nox
+        uses: wntrblm/nox@2023.04.22
+      - id: noxenvs-matrix
+        run: |
+          echo >>$GITHUB_OUTPUT noxenvs=$(
+            nox --list-sessions |
+            grep '^* ' |
+            cut -d ' ' -f 2- |
+            jq --raw-input --slurp 'split("\n") | map(select(. != ""))'
+          )
+
   ci:
+    needs: list
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     strategy:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest]
-        python-version:
-          - name: pypy-3.9
-            toxenv: pypy3-build
-          - name: pypy-3.9
-            toxenv: pypy3-audit
-          - name: pypy-3.9
-            toxenv: pypy3-tests
-          - name: 3.8
-            toxenv: py38-build
-          - name: 3.8
-            toxenv: py38-audit
-          - name: 3.8
-            toxenv: py38-tests
-          - name: 3.9
-            toxenv: py39-build
-          - name: 3.9
-            toxenv: py39-audit
-          - name: 3.9
-            toxenv: py39-tests
-          - name: "3.10"
-            toxenv: py310-build
-          - name: "3.10"
-            toxenv: py310-audit
-          - name: "3.10"
-            toxenv: py310-tests
-          - name: "3.11"
-            toxenv: py311-build
-          - name: "3.11"
-            toxenv: py311-audit
-          - name: "3.11"
-            toxenv: py311-tests
-          - name: "3.11"
-            toxenv: readme
-          - name: "3.11"
-            toxenv: secrets
-          - name: "3.11"
-            toxenv: style
+        noxenv: {% raw %}${{ fromJson(needs.list.outputs.noxenvs) }}{% endraw }
+        posargs: [""]
+        include:
+          - os: ubuntu-latest
+            noxenv: "tests-3.11"
+            posargs: coverage github
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: {% raw %}${{ matrix.python-version.name }}{% endraw %}
       - name: Install dependencies
-        run: sudo apt-get install -y libenchant-2-dev
-        if: runner.os == 'Linux' && startsWith(matrix.python-version.toxenv, 'docs-')
+        run: sudo apt-get update && sudo apt-get install -y libenchant-2-dev
+        if: runner.os == 'Linux' && startsWith(matrix.noxenv, 'docs')
       - name: Install dependencies
         run: brew install enchant
-        if: runner.os == 'macOS' && startsWith(matrix.python-version.toxenv, 'docs-')
-      - name: Install tox
-        run: python -m pip install tox
-      - name: Run tox
-        run: python -m tox -e {% raw %}"${{ matrix.python-version.toxenv }}"{% endraw %}
+        if: runner.os == 'macOS' && startsWith(matrix.noxenv, 'docs')
+      - name: Set up nox
+        uses: wntrblm/nox@2023.04.22
+      - name: Run nox
+        run: {% raw %}nox -s "${{ matrix.noxenv }}" -- ${{ matrix.posargs }}{% endraw %}
 
   packaging:
     needs: ci
     runs-on: ubuntu-latest
+    environment:
+      name: PyPI
+      url: https://pypi.org/p/{{ name }}
+    permissions:
+      contents: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v3
@@ -98,24 +87,13 @@ jobs:
         run: python -m pip install build
       - name: Create packages
         run: python -m build .
-      - uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist
-      - name: Publish package
+      - name: Publish to PyPI
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: {% raw %}${{ secrets.pypi_password }}{% endraw %}
-      - name: Create Release Notes
+      - name: Create a Release
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-        uses: actions/github-script@v6
+        uses: softprops/action-gh-release@v1
         with:
-          github-token: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
-          {% raw %}
-          script: |
-            await github.request(`POST /repos/${{ github.repository }}/releases`, {
-              tag_name: "${{ github.ref }}",
-              generate_release_notes: true
-            });
-          {% endraw %}
+          files: |
+            dist/*
+          generate_release_notes: true
