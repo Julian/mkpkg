@@ -369,15 +369,15 @@ def main(
         if not closed:
             click.echo(
                 dedent(
-                    f"""
+                    """
                     Be sure to:
 
                       * Fill in the description in the pyproject.toml and in
                         the docstring for __init__.py
-                      * Set up a PyPI publisher from the appropriate PyPI page
-                        https://pypi.org/manage/project/{name}/settings/publishing/
+                      * Set up a pending PyPI publisher from the appropriate
+                        PyPI page https://pypi.org/manage/account/publishing/
                         (named 'PyPI')
-                    """,  # noqa: E501
+                    """
                 ),
             )
 
