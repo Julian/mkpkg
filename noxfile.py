@@ -13,7 +13,7 @@ PACKAGE = ROOT / "mkpkg"
 nox.options.sessions = []
 
 
-def session(default=True, **kwargs):
+def session(default=True, **kwargs):  # noqa: D103
     def _session(fn):
         if default:
             nox.options.sessions.append(kwargs.get("name", fn.__name__))
@@ -22,8 +22,11 @@ def session(default=True, **kwargs):
     return _session
 
 
-@session(python=["3.9", "3.10", "3.11", "pypy3"])
+@session(python=["3.10", "3.11", "pypy3"])
 def tests(session):
+    """
+    Run the test suite.
+    """
     session.install("virtue", "-r", ROOT / "test-requirements.txt")
 
     if session.posargs and session.posargs[0] == "coverage":

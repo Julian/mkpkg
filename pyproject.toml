@@ -10,7 +10,7 @@ name = "mkpkg"
 description = "A package @Julian uses to create Python packages."
 readme = "README.rst"
 license = {text = "MIT"}
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 keywords = ["packaging", "templating"]
 authors = [
   {email = "Julian+mkpkg@GrayVines.com"},
@@ -22,7 +22,6 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3",
@@ -98,8 +97,6 @@ ignore = [
   "D407",
   # Plz spaces after section headers
   "D412",
-  # We support 3.9
-  "UP007",
 ]
 
 [tool.ruff.flake8-quotes]
