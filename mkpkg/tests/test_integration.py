@@ -154,7 +154,7 @@ class TestMkpkg(TestCase):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         subprocess.run(
-            [sys.executable, "-m", "mkpkg"] + list(argv),
+            [sys.executable, "-m", "mkpkg", *argv],
             cwd=directory.name,
             env=dict(
                 GIT_AUTHOR_NAME="mkpkg unittests",
@@ -178,8 +178,8 @@ class TestMkpkg(TestCase):
                 str(path / "noxfile.py"),
                 "--envdir",
                 str(path / "nox-env-dir"),
-            ]
-            + list(argv),
+                *argv,
+            ],
             check=True,
             capture_output=True,
         )

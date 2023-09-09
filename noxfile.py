@@ -55,12 +55,18 @@ def tests(session):
 
 @session()
 def audit(session):
+    """
+    Audit Python dependencies for vulnerabilities.
+    """
     session.install("pip-audit", ROOT)
     session.run("python", "-m", "pip_audit")
 
 
 @session(tags=["build"])
 def build(session):
+    """
+    Build a distribution suitable for PyPI and check its validity.
+    """
     session.install("build", "twine")
     with TemporaryDirectory() as tmpdir:
         session.run("python", "-m", "build", ROOT, "--outdir", tmpdir)
@@ -69,18 +75,27 @@ def build(session):
 
 @session()
 def secrets(session):
+    """
+    Check for accidentally included secrets.
+    """
     session.install("detect-secrets")
     session.run("detect-secrets", "scan", ROOT)
 
 
 @session(tags=["style"])
 def style(session):
+    """
+    Check for coding style.
+    """
     session.install("ruff")
     session.run("ruff", "check", ROOT)
 
 
 @session()
 def typing(session):
+    """
+    Statically check typing annotations.
+    """
     session.install("pyright", ROOT)
     session.run("pyright", PACKAGE)
 
@@ -100,6 +115,9 @@ def typing(session):
     ],
 )
 def docs(session, builder):
+    """
+    Build the documentation using various Sphinx builders.
+    """
     session.install("-r", DOCS / "requirements.txt")
     with TemporaryDirectory() as tmpdir_str:
         tmpdir = Path(tmpdir_str)
@@ -120,6 +138,9 @@ def docs(session, builder):
 
 @session(tags=["docs", "style"], name="docs(style)")
 def docs_style(session):
+    """
+    Check the documentation source style.
+    """
     session.install(
         "doc8",
         "pygments",
@@ -129,13 +150,10 @@ def docs_style(session):
 
 
 @session(default=False)
-def bandit(session):
-    session.install("bandit")
-    session.run("bandit", "--recursive", PACKAGE)
-
-
-@session(default=False)
 def requirements(session):
+    """
+    Update requirements files.
+    """
     session.install("pip-tools")
     for each in [DOCS / "requirements.in", ROOT / "test-requirements.in"]:
         session.run(
