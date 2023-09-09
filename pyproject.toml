@@ -17,7 +17,7 @@ authors = [
   {name = "Julian Berman"},
 ]
 classifiers = [
-  "Development Status :: 5 - Production",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
