@@ -89,8 +89,6 @@ class TestMkpkg(TestCase):
         self.assertEqual(
             envlist,
             {
-                "tests-3.8",
-                "tests-3.9",
                 "tests-3.10",
                 "tests-3.11",
                 "tests-pypy3",
@@ -107,8 +105,6 @@ class TestMkpkg(TestCase):
         self.assertEqual(
             envlist,
             {
-                "tests-3.8",
-                "tests-3.9",
                 "tests-3.10",
                 "tests-3.11",
                 "tests-pypy3",
