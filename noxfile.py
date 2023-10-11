@@ -9,6 +9,22 @@ PYPROJECT = ROOT / "pyproject.toml"
 DOCS = ROOT / "docs"
 PACKAGE = ROOT / "mkpkg"
 
+REQUIREMENTS = dict(
+    main=ROOT / "requirements.txt",
+    docs=DOCS / "requirements.txt",
+    tests=ROOT / "test-requirements.txt",
+)
+REQUIREMENTS_IN = {
+    (
+        ROOT / "pyproject.toml"
+        if path.absolute() == REQUIREMENTS["main"].absolute()
+        else path.parent / f"{path.stem}.in"
+    )
+    for path in REQUIREMENTS.values()
+}
+
+
+SUPPORTED = ["3.11", "3.12", "pypy3"]
 
 nox.options.sessions = []
 
@@ -22,12 +38,12 @@ def session(default=True, **kwargs):  # noqa: D103
     return _session
 
 
-@session(python=["3.10", "3.11", "pypy3"])
+@session(python=SUPPORTED)
 def tests(session):
     """
     Run the test suite.
     """
-    session.install("virtue", "-r", ROOT / "test-requirements.txt")
+    session.install("virtue", "-r", REQUIREMENTS["tests"])
 
     if session.posargs and session.posargs[0] == "coverage":
         if len(session.posargs) > 1 and session.posargs[1] == "github":
@@ -53,12 +69,12 @@ def tests(session):
         session.run("virtue", *session.posargs, PACKAGE)
 
 
-@session()
+@session(python=SUPPORTED)
 def audit(session):
     """
     Audit Python dependencies for vulnerabilities.
     """
-    session.install("pip-audit", ROOT)
+    session.install("pip-audit", "-r", REQUIREMENTS["main"])
     session.run("python", "-m", "pip_audit")
 
 
@@ -118,12 +134,13 @@ def docs(session, builder):
     """
     Build the documentation using various Sphinx builders.
     """
-    session.install("-r", DOCS / "requirements.txt")
+    session.install("-r", REQUIREMENTS["docs"])
     with TemporaryDirectory() as tmpdir_str:
         tmpdir = Path(tmpdir_str)
         argv = ["-n", "-T", "-W"]
         if builder != "spelling":
             argv += ["-q"]
+        posargs = session.posargs or [tmpdir / builder]
         session.run(
             "python",
             "-m",
@@ -131,8 +148,8 @@ def docs(session, builder):
             "-b",
             builder,
             DOCS,
-            tmpdir / builder,
             *argv,
+            *posargs,
         )
 
 
@@ -155,11 +172,12 @@ def requirements(session):
     Update requirements files.
     """
     session.install("pip-tools")
-    for each in [DOCS / "requirements.in", ROOT / "test-requirements.in"]:
+    for each in REQUIREMENTS_IN:
         session.run(
             "pip-compile",
             "--resolver",
             "backtracking",
+            "--strip-extras",
             "-U",
             each.relative_to(ROOT),
         )
