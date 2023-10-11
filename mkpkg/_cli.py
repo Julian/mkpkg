@@ -364,6 +364,7 @@ def main(
         conf = env.get_template("docs/conf.py.j2").render()
         (docs / "conf.py").write_text(conf)
         (docs / "index.rst").write_text(template("docs/index.rst"))
+        (docs / ".readthedocs.yml").write_text(template(".readthedocs.yml"))
 
         click.echo(f"Set up documentation at: {READTHEDOCS_IMPORT_URL}")
 
