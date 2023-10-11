@@ -32,6 +32,7 @@ VERSION_CLASSIFIERS = {
     "py310": "Programming Language :: Python :: 3.10",
     "py311": "Programming Language :: Python :: 3.11",
     "py312": "Programming Language :: Python :: 3.12",
+    "py313": "Programming Language :: Python :: 3.13",
     "jython": "Programming Language :: Python :: 2.7",
 }
 TEST_DEP = {
@@ -83,7 +84,7 @@ def dedented(*args, **kwargs):
     "--supports",
     multiple=True,
     type=click.Choice(sorted(VERSION_CLASSIFIERS)),
-    default=["py310", "py311", "pypy3"],
+    default=["py310", "py311", "py312", "pypy3"],
     help="a version of Python supported by the package",
 )
 @click.option(

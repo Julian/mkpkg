@@ -91,6 +91,7 @@ class TestMkpkg(TestCase):
             {
                 "tests-3.10",
                 "tests-3.11",
+                "tests-3.12",
                 "tests-pypy3",
                 "audit",
                 "build",
@@ -107,6 +108,7 @@ class TestMkpkg(TestCase):
             {
                 "tests-3.10",
                 "tests-3.11",
+                "tests-3.12",
                 "tests-pypy3",
                 "audit",
                 "build",
