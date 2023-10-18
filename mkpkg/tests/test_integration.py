@@ -117,7 +117,6 @@ class TestMkpkg(TestCase):
                 "audit-3.11",
                 "audit-3.12",
                 "audit-pypy3.10",
-                "audit",
                 "build",
                 "secrets",
                 "style",

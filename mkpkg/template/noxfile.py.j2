@@ -7,7 +7,9 @@ import nox
 ROOT = Path(__file__).parent
 PYPROJECT = ROOT / "pyproject.toml"
 DOCS = ROOT / "docs"
-{% if single_module -%}TESTS = ROOT / "tests.py"{% set tests = "TESTS" %}{% else %}PACKAGE = ROOT / "{{ package_name }}"{% set tests = "PACKAGE" %}{% endif %}
+{% if single_module -%}TESTS = ROOT / "tests.py"{% set tests = "TESTS" %}
+{% else %}{% set tests = "PACKAGE" %}
+PACKAGE = ROOT / "{{ package_name }}"
 
 REQUIREMENTS = dict(
     {% if docs -%}docs=DOCS / "requirements.txt",{% endif %}
@@ -17,6 +19,7 @@ REQUIREMENTS_IN = {
     path.parent / f"{path.stem}.in"
     for path in REQUIREMENTS.values()
 }
+{% endif %}
 
 
 SUPPORTED = [{% for each in supports %}"{{ each }}"{% if not loop.last %}, {% endif %}{% endfor %}]
@@ -38,7 +41,7 @@ def tests(session):
     """
     Run the test suite.
     """
-    session.install("{{ test_dep }}", "-r", REQUIREMENTS["tests"])
+    session.install("{{ test_dep }}"{% if not single_module %}, "-r", REQUIREMENTS["tests"]{% endif %})
 
     if session.posargs and session.posargs[0] == "coverage":
         if len(session.posargs) > 1 and session.posargs[1] == "github":
@@ -165,6 +168,7 @@ def docs_style(session):
 def bandit(session):
     session.install("bandit")
     session.run("bandit", "--recursive", {% if single_module %}ROOT / "{{ name }}.py"{% else %}PACKAGE{% endif %})
+{% if not single_module -%}
 
 
 @session(default=False)
@@ -182,3 +186,4 @@ def requirements(session):
             "-U",
             each.relative_to(ROOT),
         )
+{% endif %}
