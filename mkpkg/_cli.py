@@ -23,16 +23,19 @@ STATUS_CLASSIFIERS = {
 VERSION_CLASSIFIERS = {
     "pypy2": "Programming Language :: Python :: 2.7",
     "pypy3": "Programming Language :: Python :: 3.8",
-    "py27": "Programming Language :: Python :: 2.7",
-    "py35": "Programming Language :: Python :: 3.5",
-    "py36": "Programming Language :: Python :: 3.6",
-    "py37": "Programming Language :: Python :: 3.7",
-    "py38": "Programming Language :: Python :: 3.8",
-    "py39": "Programming Language :: Python :: 3.9",
-    "py310": "Programming Language :: Python :: 3.10",
-    "py311": "Programming Language :: Python :: 3.11",
-    "py312": "Programming Language :: Python :: 3.12",
-    "py313": "Programming Language :: Python :: 3.13",
+    "pypy3.9": "Programming Language :: Python :: 3.9",
+    "pypy3.10": "Programming Language :: Python :: 3.10",
+    "pypy3.11": "Programming Language :: Python :: 3.11",
+    "2.7": "Programming Language :: Python :: 2.7",
+    "3.5": "Programming Language :: Python :: 3.5",
+    "3.6": "Programming Language :: Python :: 3.6",
+    "3.7": "Programming Language :: Python :: 3.7",
+    "3.8": "Programming Language :: Python :: 3.8",
+    "3.9": "Programming Language :: Python :: 3.9",
+    "3.10": "Programming Language :: Python :: 3.10",
+    "3.11": "Programming Language :: Python :: 3.11",
+    "3.12": "Programming Language :: Python :: 3.12",
+    "3.13": "Programming Language :: Python :: 3.13",
     "jython": "Programming Language :: Python :: 2.7",
 }
 TEST_DEP = {
@@ -84,7 +87,7 @@ def dedented(*args, **kwargs):
     "--supports",
     multiple=True,
     type=click.Choice(sorted(VERSION_CLASSIFIERS)),
-    default=["py310", "py311", "py312", "pypy3"],
+    default=["3.10", "3.11", "3.12", "pypy3.10"],
     help="a version of Python supported by the package",
 )
 @click.option(
@@ -266,18 +269,16 @@ def main(
                 if each in VERSION_CLASSIFIERS
             },
             py2=any(
-                version.startswith("py2") or version in {"jython", "pypy2"}
+                version.startswith("2.") or version in {"jython", "pypy2"}
                 for version in supports
             ),
             py3=any(
-                version.startswith("py3") or version == "pypy3"
-                for version in supports
+                version.startswith(("3.", "pypy3")) for version in supports
             ),
             cpython=any(
-                version not in {"jython", "pypy2", "pypy3"}
-                for version in supports
+                version.startswith(("2.", "3.")) for version in supports
             ),
-            pypy="pypy2" in supports or "pypy3" in supports,
+            pypy=any(version.startswith("pypy") for version in supports),
             jython="jython" in supports,
         ),
         ".coveragerc": env.get_template(".coveragerc.j2").render(),

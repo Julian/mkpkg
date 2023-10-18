@@ -18,6 +18,9 @@ REQUIREMENTS_IN = {
     for path in REQUIREMENTS.values()
 }
 
+
+SUPPORTED = [{% for each in supports %}"{{ each }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+
 nox.options.sessions = []
 
 
@@ -30,7 +33,7 @@ def session(default=True, **kwargs):
     return _session
 
 
-@session(python=["3.10", "3.11", "pypy3"])
+@session(python=SUPPORTED)
 def tests(session):
     """
     Run the test suite.
@@ -61,7 +64,7 @@ def tests(session):
         session.run("python", "-m", "virtue", *session.posargs, {{ tests }})
 
 
-@session()
+@session(python=SUPPORTED)
 def audit(session):
     """
     Audit Python dependencies for vulnerabilities.
