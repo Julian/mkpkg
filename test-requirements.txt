@@ -6,15 +6,15 @@
 #
 alabaster==0.7.13
     # via sphinx
-argcomplete==3.1.2
+argcomplete==3.1.4
     # via nox
-babel==2.13.0
+babel==2.13.1
     # via sphinx
 build==1.0.3
     # via pip-tools
 certifi==2023.7.22
     # via requests
-charset-normalizer==3.3.0
+charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via
@@ -26,7 +26,7 @@ distlib==0.3.7
     # via virtualenv
 docutils==0.20.1
     # via sphinx
-filelock==3.12.4
+filelock==3.13.1
     # via virtualenv
 idna==3.4
     # via requests
@@ -81,9 +81,9 @@ sphinxcontrib-serializinghtml==1.1.9
     # via sphinx
 urllib3==2.0.7
     # via requests
-virtualenv==20.24.5
+virtualenv==20.24.6
     # via nox
-wheel==0.41.2
+wheel==0.41.3
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:

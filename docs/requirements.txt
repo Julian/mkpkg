@@ -6,7 +6,7 @@
 #
 alabaster==0.7.13
     # via sphinx
-babel==2.13.0
+babel==2.13.1
     # via sphinx
 beautifulsoup4==4.12.2
     # via furo
@@ -14,20 +14,14 @@ build==1.0.3
     # via pip-tools
 certifi==2023.7.22
     # via requests
-charset-normalizer==3.3.0
+charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via
     #   mkpkg
     #   pip-tools
-contourpy==1.1.1
-    # via matplotlib
-cycler==0.12.1
-    # via matplotlib
 docutils==0.20.1
     # via sphinx
-fonttools==4.43.1
-    # via matplotlib
 furo==2023.9.10
     # via -r docs/requirements.in
 idna==3.4
@@ -38,25 +32,14 @@ jinja2==3.1.2
     # via
     #   mkpkg
     #   sphinx
-kiwisolver==1.4.5
-    # via matplotlib
 markupsafe==2.1.3
     # via jinja2
-matplotlib==3.8.0
-    # via sphinxext-opengraph
 file:.#egg=mkpkg
     # via -r docs/requirements.in
-numpy==1.26.1
-    # via
-    #   contourpy
-    #   matplotlib
 packaging==23.2
     # via
     #   build
-    #   matplotlib
     #   sphinx
-pillow==10.1.0
-    # via matplotlib
 pip-tools==7.3.0
     # via mkpkg
 pyenchant==3.2.2
@@ -68,16 +51,10 @@ pygments==2.16.1
     #   sphinx
 pygments-github-lexers==0.0.5
     # via -r docs/requirements.in
-pyparsing==3.1.1
-    # via matplotlib
 pyproject-hooks==1.0.0
     # via build
-python-dateutil==2.8.2
-    # via matplotlib
 requests==2.31.0
     # via sphinx
-six==1.16.0
-    # via python-dateutil
 snowballstemmer==2.2.0
     # via sphinx
 soupsieve==2.5
@@ -111,11 +88,11 @@ sphinxcontrib-serializinghtml==1.1.9
     # via sphinx
 sphinxcontrib-spelling==8.0.0
     # via -r docs/requirements.in
-sphinxext-opengraph==0.8.2
+sphinxext-opengraph==0.9.0
     # via -r docs/requirements.in
 urllib3==2.0.7
     # via requests
-wheel==0.41.2
+wheel==0.41.3
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
