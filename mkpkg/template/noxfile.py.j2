@@ -13,7 +13,6 @@ PACKAGE = ROOT / "{{ package_name }}"
 
 REQUIREMENTS = dict(
     {% if docs -%}docs=DOCS / "requirements.txt",{% endif %}
-    tests=ROOT / "test-requirements.txt",
 )
 REQUIREMENTS_IN = {
     path.parent / f"{path.stem}.in"
@@ -41,7 +40,7 @@ def tests(session):
     """
     Run the test suite.
     """
-    session.install("{{ test_dep }}"{% if not single_module %}, "-r", REQUIREMENTS["tests"]{% endif %})
+    session.install("{{ test_dep }}")
 
     if session.posargs and session.posargs[0] == "coverage":
         if len(session.posargs) > 1 and session.posargs[1] == "github":
