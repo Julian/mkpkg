@@ -36,7 +36,7 @@ packaging==23.2
     #   sphinx
 pip-tools==7.3.0
     # via mkpkg (pyproject.toml)
-pygments==2.16.1
+pygments==2.17.2
     # via sphinx
 pyproject-hooks==1.0.0
     # via build
