@@ -281,7 +281,6 @@ def main(
             pypy=any(version.startswith("pypy") for version in supports),
             jython="jython" in supports,
         ),
-        ".coveragerc": env.get_template(".coveragerc.j2").render(),
         ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
         "noxfile.py": env.get_template("noxfile.py.j2").render(
             test_dep=TEST_DEP[test_runner],
