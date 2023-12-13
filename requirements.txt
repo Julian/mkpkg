@@ -6,7 +6,7 @@
 #
 alabaster==0.7.13
     # via sphinx
-babel==2.13.1
+babel==2.14.0
     # via sphinx
 build==1.0.3
     # via pip-tools
