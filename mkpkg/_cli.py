@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from random import randint
 from textwrap import dedent
@@ -177,7 +177,7 @@ def main(
         closed=closed,
         docs=docs,
         name=name,
-        now=datetime.now(),
+        now=datetime.now(tz=UTC),
         package_name=package_name,
         single_module=single_module,
         style=style,
@@ -327,7 +327,7 @@ def main(
                 name,
                 "add",
                 "COPYING",
-            ]
+            ],
         )
         subprocess.check_call(
             [
@@ -379,7 +379,7 @@ def main(
                       * Set up a pending PyPI publisher from the appropriate
                         PyPI page https://pypi.org/manage/account/publishing/
                         (named 'PyPI')
-                    """
+                    """,
                 ),
             )
 

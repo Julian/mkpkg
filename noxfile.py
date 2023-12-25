@@ -14,26 +14,27 @@ REQUIREMENTS = dict(
     docs=DOCS / "requirements.txt",
     tests=ROOT / "test-requirements.txt",
 )
-REQUIREMENTS_IN = {
+REQUIREMENTS_IN = [  # this is actually ordered, as files depend on each other
     (
         ROOT / "pyproject.toml"
         if path.absolute() == REQUIREMENTS["main"].absolute()
         else path.parent / f"{path.stem}.in"
     )
     for path in REQUIREMENTS.values()
-}
+]
 
 
 SUPPORTED = ["3.11", "3.12"]
+LATEST = SUPPORTED[-1]
 
 nox.options.sessions = []
 
 
-def session(default=True, **kwargs):  # noqa: D103
+def session(default=True, python=LATEST, **kwargs):  # noqa: D103
     def _session(fn):
         if default:
             nox.options.sessions.append(kwargs.get("name", fn.__name__))
-        return nox.session(**kwargs)(fn)
+        return nox.session(python=python, **kwargs)(fn)
 
     return _session
 
@@ -47,7 +48,7 @@ def tests(session):
 
     if session.posargs and session.posargs[0] == "coverage":
         if len(session.posargs) > 1 and session.posargs[1] == "github":
-            github = os.environ["GITHUB_STEP_SUMMARY"]
+            github = Path(os.environ["GITHUB_STEP_SUMMARY"])
         else:
             github = None
 
@@ -56,7 +57,7 @@ def tests(session):
         if github is None:
             session.run("coverage", "report")
         else:
-            with open(github, "a") as summary:
+            with github.open("a") as summary:
                 summary.write("### Coverage\n\n")
                 summary.flush()  # without a flush, output seems out of order.
                 session.run(
