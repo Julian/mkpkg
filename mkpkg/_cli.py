@@ -78,7 +78,7 @@ def dedented(*args, **kwargs):
 @click.option(
     "-t",
     "--test-runner",
-    default="virtue",
+    default="pytest",
     type=click.Choice(sorted(TEST_DEP)),
     help="the test runner to use",
 )
