@@ -22,8 +22,6 @@ STATUS_CLASSIFIERS = {
     "inactive": "Development Status :: 7 - Inactive",
 }
 VERSION_CLASSIFIERS = {
-    "pypy2": "Programming Language :: Python :: 2.7",
-    "pypy3": "Programming Language :: Python :: 3.8",
     "pypy3.9": "Programming Language :: Python :: 3.9",
     "pypy3.10": "Programming Language :: Python :: 3.10",
     "pypy3.11": "Programming Language :: Python :: 3.11",
@@ -37,8 +35,8 @@ VERSION_CLASSIFIERS = {
     "3.11": "Programming Language :: Python :: 3.11",
     "3.12": "Programming Language :: Python :: 3.12",
     "3.13": "Programming Language :: Python :: 3.13",
-    "jython": "Programming Language :: Python :: 2.7",
 }
+PYVERSION = re.compile(r"\d\.\d+")
 TEST_DEP = {
     "pytest": "pytest",
     "twisted.trial": "twisted",
@@ -166,6 +164,14 @@ def main(
         package_name = name
     package_name = package_name.lower().replace("-", "_")
 
+    supports = sorted(
+        supports,
+        key=lambda v: (
+            [int(g) for g in PYVERSION.search(v)[0].split(".")],
+            -len(v),
+        ),
+    )
+
     env = jinja2.Environment(
         loader=jinja2.PackageLoader("mkpkg", "template"),
         undefined=jinja2.StrictUndefined,
@@ -281,10 +287,7 @@ def main(
             ),
             pypy=any(version.startswith("pypy") for version in supports),
             jython="jython" in supports,
-            minimum_python_version=min(
-                (re.search(r"\d\.\d+", version) for version in supports),
-                key=lambda m: [int(g) for g in m.groups()],
-            )[0],
+            minimum_python_version=PYVERSION.search(supports[0])[0],
         ),
         ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
         "noxfile.py": env.get_template("noxfile.py.j2").render(
