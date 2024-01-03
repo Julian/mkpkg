@@ -13,6 +13,7 @@ PACKAGE = ROOT / "{{ package_name }}"
 
 REQUIREMENTS = dict(
     {% if docs -%}docs=DOCS / "requirements.txt",{% endif %}
+    {% if test_runner == "pytest" -%}tests=ROOT / "test-requirements.txt",{% endif %}
 )
 REQUIREMENTS_IN = {
     path.parent / f"{path.stem}.in"
