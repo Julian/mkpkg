@@ -49,8 +49,8 @@ dynamic = ["version"]
   {{ each }}
 {% endfor %}
 [project.urls]{% if docs %}
-Documentation = "https://{{ name }}.readthedocs.io/"{%- endif %}
 Homepage = "https://github.com/Julian/{{ name }}"
+Documentation = "https://{{ name }}.readthedocs.io/"{%- endif %}
 Issues = "https://github.com/Julian/{{ name }}/issues/"
 Funding = "https://github.com/sponsors/Julian"
 Source = "https://github.com/Julian/{{ name }}"
@@ -96,7 +96,6 @@ exclude = [
 
 [tool.ruff]
 line-length = 79
-target-version = "py38"
 select = ["ALL"]
 ignore = [
   "A001",  # It's fine to shadow builtins
@@ -130,7 +129,9 @@ ignore = [
   "PLR0915",
   "PLW2901",  # Shadowing for loop variables is occasionally fine.
   "PT006",  # pytest parametrize takes strings as well
-  "RET503",  # Returning None implicitly is fine
+  "PYI025",  # wat, I'm not confused, thanks.
+  "RET502",  # Returning None implicitly is fine
+  "RET503",
   "RET505",  # These push you to use `if` instead of `elif`, but for no reason
   "RET506",
   "RSE102",  # Ha, what, who even knew you could leave the parens off. But no.

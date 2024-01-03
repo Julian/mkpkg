@@ -40,8 +40,8 @@ dependencies = [
 mkpkg = "mkpkg._cli:main"
 
 [project.urls]
-Documentation = "https://mkpkg.readthedocs.io/"
 Homepage = "https://github.com/Julian/mkpkg"
+Documentation = "https://mkpkg.readthedocs.io/"
 Issues = "https://github.com/Julian/mkpkg/issues/"
 Funding = "https://github.com/sponsors/Julian"
 Source = "https://github.com/Julian/mkpkg"
