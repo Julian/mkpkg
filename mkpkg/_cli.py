@@ -353,19 +353,9 @@ def main(
         requirements = env.get_template("docs/requirements.in.j2").render()
         (docs / "requirements.in").write_text(requirements)
         subprocess.check_call(
-            [
-                sys.executable,
-                "-m",
-                "piptools",
-                "compile",
-                "--quiet",
-                "--resolver",
-                "backtracking",
-                "--strip-extras",
-                "-U",
-                str(docs.joinpath("requirements.in").absolute()),
-            ],
+            ["nox", "-s", "requirements"],
             cwd=root.absolute(),
+            stdout=subprocess.DEVNULL,  # nox appears to have no --quiet...
         )
         conf = env.get_template("docs/conf.py.j2").render()
         (docs / "conf.py").write_text(conf)
