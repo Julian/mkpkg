@@ -49,7 +49,7 @@ def tests(session):
             github = None
 
         session.install("coverage[toml]")
-        session.run("coverage", "run", "-m", "virtue", {{ tests }})
+        session.run("coverage", "run", "-m", "{{ test_runner }}", {{ tests }})
         if github is None:
             session.run("coverage", "report")
         else:
@@ -63,7 +63,7 @@ def tests(session):
                     stdout=summary,
                 )
     else:
-        session.run("python", "-m", "virtue", *session.posargs, {{ tests }})
+        session.run("python", "-m", "{{ test_runner }}", *session.posargs, {{ tests }})
 
 
 @session(python=SUPPORTED)
