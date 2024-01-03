@@ -8,6 +8,7 @@ source = "vcs"
 [project]
 name = "{{ package_name }}"
 description = ""
+requires-python = ">={{ minimum_python_version }}"
 readme = "README.rst"
 license = {text = "{% if not closed %}MIT{% else %}Private{% endif %}"}
 keywords = []

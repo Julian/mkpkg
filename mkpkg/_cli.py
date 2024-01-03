@@ -4,6 +4,7 @@ from random import randint
 from textwrap import dedent
 import os
 import pwd
+import re
 import subprocess
 import sys
 import textwrap
@@ -280,6 +281,10 @@ def main(
             ),
             pypy=any(version.startswith("pypy") for version in supports),
             jython="jython" in supports,
+            minimum_python_version=min(
+                (re.search(r"\d\.\d+", version) for version in supports),
+                key=lambda m: [int(g) for g in m.groups()],
+            )[0],
         ),
         ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
         "noxfile.py": env.get_template("noxfile.py.j2").render(
