@@ -288,6 +288,11 @@ def main(
         ),
     }
 
+    if test_runner == "pytest":
+        files["test-requirements.in"] = env.get_template(
+            "test-requirements.in.j2",
+        ).render(test_dep=TEST_DEP[test_runner])
+
     if not closed:
         files[".github/workflows/ci.yml"] = env.get_template(
             ".github/workflows/ci.yml.j2",
