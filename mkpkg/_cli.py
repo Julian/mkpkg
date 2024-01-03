@@ -356,6 +356,7 @@ def main(
                 "--quiet",
                 "--resolver",
                 "backtracking",
+                "--strip-extras",
                 "-U",
                 str(docs.joinpath("requirements.in").absolute()),
             ],
