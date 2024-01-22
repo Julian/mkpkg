@@ -6,7 +6,7 @@ author = "Julian Berman"
 copyright = f"2019, {author}"
 
 release = importlib.metadata.version("mkpkg")
-version = release.partition("-")[0]
+version, _, _ = release.rpartition(".")
 
 language = "en"
 default_role = "any"

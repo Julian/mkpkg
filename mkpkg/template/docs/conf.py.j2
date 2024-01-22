@@ -6,7 +6,7 @@ author = "Julian Berman"
 copyright = f"{{ now.year }}, {author}"
 
 release = importlib.metadata.version("{{ name }}")
-version = release.partition("-")[0]
+version, _, _ = release.rpartition(".")
 
 language = "en"
 default_role = "any"
