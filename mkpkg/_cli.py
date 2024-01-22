@@ -167,7 +167,7 @@ def main(
     supports = sorted(
         supports,
         key=lambda v: (
-            [int(g) for g in PYVERSION.search(v)[0].split(".")],
+            [int(g) for g in PYVERSION.search(v)[0].split(".")],  # type: ignore[reportOptionalSubscript]
             -len(v),
         ),
     )
@@ -287,7 +287,7 @@ def main(
             ),
             pypy=any(version.startswith("pypy") for version in supports),
             jython="jython" in supports,
-            minimum_python_version=PYVERSION.search(supports[0])[0],
+            minimum_python_version=PYVERSION.search(supports[0])[0],  # type: ignore[reportOptionalSubscript]
         ),
         ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
         "noxfile.py": env.get_template("noxfile.py.j2").render(
