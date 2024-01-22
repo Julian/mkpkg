@@ -37,10 +37,18 @@ linkcheck_ignore = [
     entire_domain("img.shields.io"),
     "https://github.com/Julian/{{ name }}/actions",
     "https://github.com/Julian/{{ name }}/workflows/CI/badge.svg",
-
-    # REMOVEME: Once RTD builds the project
-    entire_domain("{{ name }}.readthedocs.io"),
 ]
+
+# Ignore some links that only exist once we exist as a package.
+# It's safe to remove this after a first release.
+if version == "0.1":
+    linkcheck_ignore.extend(
+        [
+            "https://pypi.org/project/{{ name }}/",
+            entire_domain("{{ name }}.readthedocs.io"),
+        ],
+    )
+
 
 # = Extensions =
 
