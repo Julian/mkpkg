@@ -13,8 +13,7 @@ license = {text = "MIT"}
 requires-python = ">=3.11"
 keywords = ["packaging", "templating"]
 authors = [
-  {email = "Julian+mkpkg@GrayVines.com"},
-  {name = "Julian Berman"},
+  { name = "Julian Berman", email = "Julian+mkpkg@GrayVines.com" },
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
