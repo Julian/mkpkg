@@ -34,7 +34,7 @@ packaging==23.2
     # via
     #   build
     #   sphinx
-pip-tools==7.4.0
+pip-tools==7.4.1
     # via mkpkg (pyproject.toml)
 pygments==2.17.2
     # via sphinx
