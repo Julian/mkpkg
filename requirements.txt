@@ -18,7 +18,7 @@ click==8.1.7
     # via
     #   mkpkg (pyproject.toml)
     #   pip-tools
-docutils==0.20.1
+docutils==0.21.post1
     # via sphinx
 idna==3.6
     # via requests
