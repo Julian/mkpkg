@@ -31,7 +31,6 @@ dynamic = ["version"]
 dependencies = [
   "click",
   "jinja2",
-  "pip-tools",
   "sphinx",
 ]
 

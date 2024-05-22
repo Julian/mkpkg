@@ -16,9 +16,12 @@ REQUIREMENTS = dict(
 )
 REQUIREMENTS_IN = [  # this is actually ordered, as files depend on each other
     (
-        ROOT / "pyproject.toml"
-        if path.absolute() == REQUIREMENTS["main"].absolute()
-        else path.parent / f"{path.stem}.in"
+        (
+            ROOT / "pyproject.toml"
+            if path.absolute() == REQUIREMENTS["main"].absolute()
+            else path.parent / f"{path.stem}.in"
+        ),
+        path,
     )
     for path in REQUIREMENTS.values()
 ]
@@ -27,6 +30,7 @@ REQUIREMENTS_IN = [  # this is actually ordered, as files depend on each other
 SUPPORTED = ["3.11", "3.12"]
 LATEST = SUPPORTED[-1]
 
+nox.options.default_venv_backend = "uv|virtualenv"
 nox.options.sessions = []
 
 
@@ -133,7 +137,7 @@ def typing(session):
 )
 def docs(session, builder):
     """
-    Build the documentation using various Sphinx builders.
+    Build the documentation using a specific Sphinx builder.
     """
     session.install("-r", REQUIREMENTS["docs"])
     with TemporaryDirectory() as tmpdir_str:
@@ -157,7 +161,7 @@ def docs(session, builder):
 @session(tags=["docs", "style"], name="docs(style)")
 def docs_style(session):
     """
-    Check the documentation source style.
+    Check the documentation style.
     """
     session.install(
         "doc8",
@@ -170,15 +174,17 @@ def docs_style(session):
 @session(default=False)
 def requirements(session):
     """
-    Update requirements files.
+    Update the project's pinned requirements.
+
+    You should commit the result afterwards.
     """
-    session.install("pip-tools")
-    for each in REQUIREMENTS_IN:
-        session.run(
-            "pip-compile",
-            "--resolver",
-            "backtracking",
-            "--strip-extras",
-            "-U",
-            each.relative_to(ROOT),
-        )
+    if session.venv_backend == "uv":
+        cmd = ["uv", "pip", "compile"]
+    else:
+        session.install("pip-tools")
+        cmd = ["pip-compile", "--resolver", "backtracking", "--strip-extras"]
+
+    for each, out in REQUIREMENTS_IN:
+        # otherwise output files end up with silly absolute path comments...
+        relative = each.relative_to(ROOT)
+        session.run(*cmd, "--upgrade", "--output-file", out, relative)
