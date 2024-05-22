@@ -39,12 +39,14 @@ pip-tools==7.4.1
 pygments==2.18.0
     # via sphinx
 pyproject-hooks==1.1.0
-    # via build
+    # via
+    #   build
+    #   pip-tools
 requests==2.32.2
     # via sphinx
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==7.2.6
+sphinx==7.3.7
     # via mkpkg (pyproject.toml)
 sphinxcontrib-applehelp==1.0.8
     # via sphinx
