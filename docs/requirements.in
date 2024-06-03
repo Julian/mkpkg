@@ -1,4 +1,4 @@
-file:.#egg=mkpkg
+file:.
 furo
 pygments-github-lexers
 sphinx>5
