@@ -2,11 +2,11 @@
 #    uv pip compile --output-file /Users/julian/Development/mkpkg/test-requirements.txt test-requirements.in
 alabaster==0.7.16
     # via sphinx
-argcomplete==3.3.0
+argcomplete==3.4.0
     # via nox
 babel==2.15.0
     # via sphinx
-certifi==2024.6.2
+certifi==2024.7.4
     # via requests
 charset-normalizer==3.3.2
     # via requests
@@ -18,7 +18,7 @@ distlib==0.3.8
     # via virtualenv
 docutils==0.21.2
     # via sphinx
-filelock==3.14.0
+filelock==3.15.4
     # via virtualenv
 idna==3.7
     # via requests
@@ -34,7 +34,7 @@ file:.
     # via -r test-requirements.in
 nox==2024.4.15
     # via -r test-requirements.in
-packaging==24.0
+packaging==24.1
     # via
     #   nox
     #   sphinx
@@ -60,7 +60,7 @@ sphinxcontrib-qthelp==1.0.7
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.10
     # via sphinx
-urllib3==2.2.1
+urllib3==2.2.2
     # via requests
-virtualenv==20.26.2
+virtualenv==20.26.3
     # via nox
