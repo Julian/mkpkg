@@ -2,7 +2,7 @@
 #    uv pip compile --output-file /Users/julian/Development/mkpkg/requirements.txt pyproject.toml
 alabaster==1.0.0
     # via sphinx
-babel==2.16.0
+babel==2.17.0
     # via sphinx
 certifi==2024.12.14
     # via requests
