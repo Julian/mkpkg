@@ -8,18 +8,16 @@ source = "vcs"
 [project]
 name = "{{ package_name }}"
 description = ""
-requires-python = ">={{ minimum_python_version }}"
 readme = "README.rst"
-license = {text = "{% if not closed %}MIT{% else %}Private{% endif %}"}
+license = "{% if not closed %}MIT{% else %}Private{% endif %}"
+requires-python = ">={{ minimum_python_version }}"
 keywords = []
 authors = [
   { name = "Julian Berman", email = "{{ author_email }}" },
 ]
 classifiers = [
   "{{ status_classifier }}",
-  {% if not closed -%}
-  "License :: OSI Approved :: MIT License",
-  {% else -%}
+  {% if closed -%}
   "Private :: Do Not Upload",
   {% endif -%}
   "Operating System :: OS Independent",
@@ -74,24 +72,8 @@ skip_covered = true
 
 [tool.doc8]
 ignore = [
-    "D000",  # see PyCQA/doc8#125
-    "D001",  # one sentence per line, so max length doesn't make sense
-]
-
-[tool.isort]
-combine_as_imports = true
-ensure_newline_before_comments = true
-from_first = true
-include_trailing_comma = true
-multi_line_output = 3
-use_parentheses = true
-
-[tool.pyright]
-reportUnnecessaryTypeIgnoreComment = true
-strict = ["**/*.py"]
-exclude = [
-    "**/tests/__init__.py",
-    "**/tests/test_*.py",
+  "D000",  # see PyCQA/doc8#125
+  "D001",  # one sentence per line, so max length doesn't make sense
 ]
 
 [tool.ruff]
@@ -103,6 +85,7 @@ ignore = [
   "A001",  # It's fine to shadow builtins
   "A002",
   "A003",
+  "A005",
   "ARG",  # This is all wrong whenever an interface is involved
   "ANN",  # Just let the type checker do this
   "B006",  # Mutable arguments require care but are OK if you don't abuse them
@@ -121,7 +104,7 @@ ignore = [
   "D406",  # Section headers should end with a colon not a newline
   "D407",  # Underlines aren't needed
   "D412",  # Plz spaces after section headers
-  "EM101",  # These don't bother me.
+  "EM101",  # These don't bother me, it's fine there's some duplication.
   "EM102",
   "FBT",  # It's worth avoiding boolean args but I don't care to enforce it
   "FIX",  # Yes thanks, if I could it wouldn't be there

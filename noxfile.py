@@ -27,7 +27,7 @@ REQUIREMENTS_IN = [  # this is actually ordered, as files depend on each other
 ]
 
 
-SUPPORTED = ["3.11", "3.12"]
+SUPPORTED = ["3.11", "3.12", "3.13"]
 LATEST = SUPPORTED[-1]
 
 nox.options.default_venv_backend = "uv|virtualenv"
@@ -88,9 +88,15 @@ def build(session):
     """
     Build a distribution suitable for PyPI and check its validity.
     """
-    session.install("build", "twine")
+    session.install("build[uv]", "twine")
     with TemporaryDirectory() as tmpdir:
-        session.run("python", "-m", "build", ROOT, "--outdir", tmpdir)
+        session.run(
+            "pyproject-build",
+            "--installer=uv",
+            ROOT,
+            "--outdir",
+            tmpdir,
+        )
         session.run("twine", "check", "--strict", tmpdir + "/*")
 
 
@@ -109,7 +115,7 @@ def style(session):
     Check for coding style.
     """
     session.install("ruff")
-    session.run("ruff", "check", ROOT)
+    session.run("ruff", "check", ROOT, __file__)
 
 
 @session()
@@ -161,7 +167,7 @@ def docs(session, builder):
 @session(tags=["docs", "style"], name="docs(style)")
 def docs_style(session):
     """
-    Check the documentation style.
+    Check the documentation source style.
     """
     session.install(
         "doc8",

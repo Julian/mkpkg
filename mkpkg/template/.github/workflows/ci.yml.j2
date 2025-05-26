@@ -2,44 +2,35 @@ name: CI
 
 on:
   push:
+    branches-ignore:
+      - "wip*"
+    tags:
+      - "v*"
   pull_request:
-  release:
-    types: [published]
   schedule:
     # Daily at {{ schedule_hour }}:{{ schedule_minute }}
     - cron: "{{ schedule_minute }} {{ schedule_hour }} * * *"
-
-env:
-  PIP_DISABLE_PIP_VERSION_CHECK: "1"
-  PIP_NO_PYTHON_VERSION_WARNING: "1"
+  workflow_dispatch:
 
 jobs:
-  pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-      - uses: pre-commit/action@v3.0.0
-
   list:
     runs-on: ubuntu-latest
     outputs:
       noxenvs: {% raw %}${{ steps.noxenvs-matrix.outputs.noxenvs }}{% endraw %}
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up nox
-        uses: wntrblm/nox@2023.04.22
+      - uses: actions/checkout@v4
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
       - id: noxenvs-matrix
         run: |
           echo >>$GITHUB_OUTPUT noxenvs=$(
-            nox --list-sessions --json | jq '[.[].session]'
+            uvx nox --list-sessions --json | jq '[.[].session]'
           )
 
   ci:
     needs: list
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
+
     strategy:
       fail-fast: false
       matrix:
@@ -48,21 +39,22 @@ jobs:
         posargs: [""]
         include:
           - os: ubuntu-latest
-            noxenv: "tests-3.11"
+            noxenv: "tests-3.12"
             posargs: coverage github
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y libenchant-2-dev
         if: runner.os == 'Linux' && startsWith(matrix.noxenv, 'docs')
       - name: Install dependencies
         run: brew install enchant
         if: runner.os == 'macOS' && startsWith(matrix.noxenv, 'docs')
-      - name: Set up nox
-        uses: wntrblm/nox@2023.04.22
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
       - name: Run nox
-        run: {% raw %}nox -s "${{ matrix.noxenv }}" -- ${{ matrix.posargs }}{% endraw %}
+        run: {% raw %}uvx nox -s "${{ matrix.noxenv }}" -- ${{ matrix.posargs }}{% endraw %}
 
   packaging:
     needs: ci
@@ -70,20 +62,21 @@ jobs:
     environment:
       name: PyPI
       url: https://pypi.org/p/{{ name }}
+
     permissions:
       contents: write
       id-token: write
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.x"
-      - name: Install dependencies
-        run: python -m pip install build
-      - name: Create packages
-        run: python -m build .
+          enable-cache: true
+
+      - name: Build our distributions
+        run: uv run --frozen --with 'build[uv]' -m build --installer=uv
+
       - name: Publish to PyPI
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@release/v1
