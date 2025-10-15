@@ -4,15 +4,15 @@ alabaster==1.0.0
     # via sphinx
 babel==2.17.0
     # via sphinx
-certifi==2025.8.3
+certifi==2025.10.5
     # via requests
-charset-normalizer==3.4.3
+charset-normalizer==3.4.4
     # via requests
-click==8.2.1
+click==8.3.0
     # via mkpkg (pyproject.toml)
-docutils==0.22
+docutils==0.21.2
     # via sphinx
-idna==3.10
+idna==3.11
     # via requests
 imagesize==1.4.1
     # via sphinx
@@ -20,7 +20,7 @@ jinja2==3.1.6
     # via
     #   mkpkg (pyproject.toml)
     #   sphinx
-markupsafe==3.0.2
+markupsafe==3.0.3
     # via jinja2
 packaging==25.0
     # via sphinx
