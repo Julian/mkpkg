@@ -10,7 +10,7 @@ charset-normalizer==3.4.4
     # via requests
 click==8.3.0
     # via mkpkg (pyproject.toml)
-docutils==0.21.2
+docutils==0.22.2
     # via sphinx
 idna==3.11
     # via requests
