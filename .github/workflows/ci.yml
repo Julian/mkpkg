@@ -39,7 +39,7 @@ jobs:
         posargs: [""]
         include:
           - os: ubuntu-latest
-            noxenv: "tests-3.12"
+            noxenv: "tests-3.14"
             posargs: coverage github
 
     steps:
@@ -54,10 +54,9 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: |
-            3.11
             3.12
             3.13
-            pypy3.11
+            3.14
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v7
