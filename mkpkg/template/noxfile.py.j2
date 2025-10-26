@@ -69,13 +69,15 @@ def tests(session):
         session.run("python", "-m", "{{ test_runner }}", *session.posargs, {{ tests }})
 
 
+{% if cli %}
 @session(python=SUPPORTED)
 def audit(session):
     """
     Audit Python dependencies for vulnerabilities.
     """
-    session.install("pip-audit", ROOT)
-    session.run("python", "-m", "pip_audit")
+    session.install("pip-audit")
+    session.run("python", "-m", "pip_audit", "-r", "pyproject.toml")
+{% endif %}
 
 
 @session(tags=["build"])
