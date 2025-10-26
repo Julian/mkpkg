@@ -46,9 +46,11 @@ dynamic = ["version"]
 {% if loop.first -%}[project.scripts]{%- endif %}
   {{ each }}
 {% endfor %}
-[project.urls]{% if docs %}
+[project.urls]
 Homepage = "https://github.com/Julian/{{ name }}"
-Documentation = "https://{{ name }}.readthedocs.io/"{%- endif %}
+{%- if docs %}
+Documentation = "https://{{ name }}.readthedocs.io/"
+{%- endif %}
 Issues = "https://github.com/Julian/{{ name }}/issues/"
 Funding = "https://github.com/sponsors/Julian"
 Source = "https://github.com/Julian/{{ name }}"
