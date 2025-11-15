@@ -165,15 +165,17 @@ class TestMkpkg(TestCase):
         return Path(directory.name)
 
     def nox(self, path, *argv):
+        directory = TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
         return subprocess.run(
             [
                 sys.executable,
                 "-m",
                 "nox",
                 "--noxfile",
-                str(path / "noxfile.py"),
+                path / "noxfile.py",
                 "--envdir",
-                str(path / "nox-env-dir"),
+                directory.name,
                 *argv,
             ],
             check=True,
