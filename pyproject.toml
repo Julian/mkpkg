@@ -11,7 +11,7 @@ description = "A package @Julian uses to create Python packages."
 readme = "README.rst"
 license = "MIT"
 license-files = ["COPYING"]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 keywords = ["packaging", "templating"]
 authors = [
   { name = "Julian Berman", email = "Julian+mkpkg@GrayVines.com" },
@@ -21,7 +21,6 @@ classifiers = [
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3",
@@ -39,11 +38,24 @@ dependencies = [
 mkpkg = "mkpkg._cli:main"
 
 [project.urls]
-Homepage = "https://github.com/Julian/mkpkg"
 Documentation = "https://mkpkg.readthedocs.io/"
+Homepage = "https://github.com/Julian/mkpkg"
 Issues = "https://github.com/Julian/mkpkg/issues/"
 Funding = "https://github.com/sponsors/Julian"
 Source = "https://github.com/Julian/mkpkg"
+
+[dependency-groups]
+docs = [
+    "furo>=2025.9.25",
+    "pygments-github-lexers>=0.0.5",
+    "sphinx>5",
+    "sphinxcontrib-spelling>5",
+    "sphinxext-opengraph>=0.13.0",
+]
+test = [
+    "nox>=2025.11.12",
+    "pytest>=9.0.1",
+]
 
 [tool.coverage.html]
 show_contexts = true
@@ -101,7 +113,9 @@ ignore = [
   "FBT",  # It's worth avoiding boolean args but I don't care to enforce it
   "FIX",  # Yes thanks, if I could it wouldn't be there
   "N",  # These naming rules are silly
-  "PLR0912",  # These metrics are fine to be aware of but not to enforce
+  "PLC0415", # too noisy, there are too many cases this is fine
+  "PLR0911", # These metrics are fine to be aware of but not to enforce
+  "PLR0912",
   "PLR0913",
   "PLR0915",
   "PLW2901",  # Shadowing for loop variables is occasionally fine.
@@ -112,6 +126,7 @@ ignore = [
   "RET505",  # These push you to use `if` instead of `elif`, but for no reason
   "RET506",
   "RSE102",  # Ha, what, who even knew you could leave the parens off. But no.
+  "RUF043",  # This rule makes no sense. "foo.*bar" is a string containing a regex
   "S",  # Security warnings with lots of false positives, as usual
   "SIM300", # Not sure what heuristic this uses, but it's easily incorrect
   "SLF001",  # Private usage within this package itself is fine
