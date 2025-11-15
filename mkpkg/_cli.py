@@ -262,6 +262,7 @@ def main(
         "pyproject.toml": env.get_template("pyproject.toml.j2").render(
             dependencies=dependencies,
             scripts=scripts,
+            test_dep=TEST_DEP[test_runner],
             author_email=(
                 author_email or "Julian+" + package_name + "@GrayVines.com"
             ),
@@ -291,11 +292,6 @@ def main(
             tests=tests,
         ),
     }
-
-    if test_runner == "pytest":
-        files["test-requirements.in"] = env.get_template(
-            "test-requirements.in.j2",
-        ).render(test_dep=TEST_DEP[test_runner])
 
     if not closed:
         files[".github/workflows/ci.yml"] = env.get_template(
@@ -330,7 +326,7 @@ def main(
             [
                 "git",
                 "--git-dir",
-                str(git_dir),
+                git_dir,
                 "--work-tree",
                 name,
                 "add",
@@ -341,7 +337,7 @@ def main(
             [
                 "git",
                 "--git-dir",
-                str(git_dir),
+                git_dir,
                 "commit",
                 "--quiet",
                 "-m",
@@ -353,13 +349,6 @@ def main(
         docs = root / "docs"
         docs.mkdir()
 
-        requirements = env.get_template("docs/requirements.in.j2").render()
-        (docs / "requirements.in").write_text(requirements)
-        subprocess.check_call(
-            ["nox", "-s", "requirements"],
-            cwd=root.absolute(),
-            stdout=subprocess.DEVNULL,  # nox appears to have no --quiet...
-        )
         conf = env.get_template("docs/conf.py.j2").render()
         (docs / "conf.py").write_text(conf)
         (docs / "index.rst").write_text(template("docs/index.rst"))

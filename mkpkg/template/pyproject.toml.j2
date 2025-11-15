@@ -55,6 +55,19 @@ Issues = "https://github.com/Julian/{{ name }}/issues/"
 Funding = "https://github.com/sponsors/Julian"
 Source = "https://github.com/Julian/{{ name }}"
 
+[dependency-groups]
+test = [
+  "{{ test_dep }}",
+]
+{%- if docs %}
+docs = [
+  "furo",
+  "sphinx>5",
+  "sphinxcontrib-spelling>5",
+  "sphinxext-opengraph",
+]
+{% endif %}
+
 [tool.coverage.html]
 show_contexts = true
 skip_covered = false

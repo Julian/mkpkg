@@ -1,8 +1,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import os
-import subprocess
-
+{% if cli -%}import subprocess{%- endif %}
 import nox
 
 ROOT = Path(__file__).parent
