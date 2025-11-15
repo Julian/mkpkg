@@ -206,8 +206,8 @@ def main(
 
         script_name = package_name + ".py"
         core_source_paths = {
-            script_name: script,
-            "tests.py": env.get_template("tests.py.j2").render(),
+            Path(script_name): script,
+            Path("tests.py"): env.get_template("tests.py.j2").render(),
         }
 
     else:
@@ -314,8 +314,7 @@ def main(
     if bare:
         targets = core_source_paths
     else:
-        files.update(core_source_paths)
-        targets = files
+        targets = files | core_source_paths
         root.mkdir()
 
     for path, content in targets.items():
