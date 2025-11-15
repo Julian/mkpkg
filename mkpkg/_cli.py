@@ -22,16 +22,15 @@ STATUS_CLASSIFIERS = {
     "inactive": "Development Status :: 7 - Inactive",
 }
 VERSION_CLASSIFIERS = {
-    "pypy3.10": "Programming Language :: Python :: 3.10",
     "pypy3.11": "Programming Language :: Python :: 3.11",
     "pypy3.12": "Programming Language :: Python :: 3.12",
-    "2.7": "Programming Language :: Python :: 2.7",
-    "3.9": "Programming Language :: Python :: 3.9",
+    "pypy3.13": "Programming Language :: Python :: 3.13",
     "3.10": "Programming Language :: Python :: 3.10",
     "3.11": "Programming Language :: Python :: 3.11",
     "3.12": "Programming Language :: Python :: 3.12",
     "3.13": "Programming Language :: Python :: 3.13",
     "3.14": "Programming Language :: Python :: 3.14",
+    "3.15": "Programming Language :: Python :: 3.15",
 }
 PYVERSION = re.compile(r"\d\.\d+")
 TEST_DEP = {
@@ -83,7 +82,7 @@ def dedented(*args, **kwargs):
     "--supports",
     multiple=True,
     type=click.Choice(sorted(VERSION_CLASSIFIERS)),
-    default=["3.11", "3.12", "3.13", "pypy3.11"],
+    default=["pypy3.11", "3.12", "3.13", "3.14"],
     help="a version of Python supported by the package",
 )
 @click.option(

@@ -89,14 +89,10 @@ class TestMkpkg(TestCase):
         self.assertEqual(
             envlist,
             {
-                "tests-3.11",
+                "tests-pypy3.11",
                 "tests-3.12",
                 "tests-3.13",
-                "tests-pypy3.11",
-                "audit-3.11",
-                "audit-3.12",
-                "audit-3.13",
-                "audit-pypy3.11",
+                "tests-3.14",
                 "build",
                 "secrets",
                 "style",
@@ -109,14 +105,10 @@ class TestMkpkg(TestCase):
         self.assertEqual(
             envlist,
             {
-                "tests-3.11",
+                "tests-pypy3.11",
                 "tests-3.12",
                 "tests-3.13",
-                "tests-pypy3.11",
-                "audit-3.11",
-                "audit-3.12",
-                "audit-3.13",
-                "audit-pypy3.11",
+                "tests-3.14",
                 "build",
                 "secrets",
                 "style",
