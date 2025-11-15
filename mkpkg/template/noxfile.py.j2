@@ -1,6 +1,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import os
+import subprocess
 
 import nox
 
@@ -10,22 +11,13 @@ DOCS = ROOT / "docs"
 {% if single_module -%}TESTS = ROOT / "tests.py"{% set tests = "TESTS" %}
 {% else %}{% set tests = "PACKAGE" %}
 PACKAGE = ROOT / "{{ package_name }}"
-
-REQUIREMENTS = dict(
-    {% if docs -%}docs=DOCS / "requirements.txt",{% endif %}
-    {% if test_runner == "pytest" -%}tests=ROOT / "test-requirements.txt",{% endif %}
-)
-REQUIREMENTS_IN = {
-    (path.parent / f"{path.stem}.in", path)
-    for path in REQUIREMENTS.values()
-}
 {% endif %}
 
 
 SUPPORTED = [{% for each in supports %}"{{ each }}"{% if not loop.last %}, {% endif %}{% endfor %}]
 LATEST = SUPPORTED[-1]
 
-nox.options.default_venv_backend = "uv|virtualenv"
+nox.options.default_venv_backend = "uv"
 nox.options.sessions = []
 
 
@@ -43,7 +35,13 @@ def tests(session):
     """
     Run the test suite.
     """
-    session.install("{{ test_dep }}")
+    session.run_install(
+        "uv",
+        "sync",
+        "--group=test",
+        f"--python={session.virtualenv.location}",
+        env={"UV_PROJECT_ENVIRONMENT": session.virtualenv.location},
+    )
 
     if session.posargs and session.posargs[0] == "coverage":
         if len(session.posargs) > 1 and session.posargs[1] == "github":
@@ -76,7 +74,14 @@ def audit(session):
     Audit Python dependencies for vulnerabilities.
     """
     session.install("pip-audit")
-    session.run("python", "-m", "pip_audit", "-r", "pyproject.toml")
+    with NamedTemporaryFile() as tmpfile:
+        subprocess.run(
+            ["uv", "pip", "freeze"],
+            cwd=ROOT,
+            check=True,
+            stdout=tmpfile,
+        )
+        session.run("python", "-m", "pip_audit", "-r", tmpfile.name)
 {% endif %}
 
 
@@ -112,7 +117,7 @@ def style(session):
     Check for coding style.
     """
     session.install("ruff")
-    session.run("ruff", "check", ROOT)
+    session.run("ruff", "check", ROOT, __file__)
 
 
 @session()
@@ -142,7 +147,13 @@ def docs(session, builder):
     """
     Build the documentation using a specific Sphinx builder.
     """
-    session.install("-r", REQUIREMENTS["docs"])
+    session.run_install(
+        "uv",
+        "sync",
+        "--group=docs",
+        f"--python={session.virtualenv.location}",
+        env={"UV_PROJECT_ENVIRONMENT": session.virtualenv.location},
+    )
     with TemporaryDirectory() as tmpdir_str:
         tmpdir = Path(tmpdir_str)
         argv = ["-n", "-T", "-W"]
@@ -172,24 +183,4 @@ def docs_style(session):
         "pygments-github-lexers",
     )
     session.run("python", "-m", "doc8", "--config", PYPROJECT, DOCS)
-{% endif %}{% if not single_module %}
-
-
-@session(default=False)
-def requirements(session):
-    """
-    Update the project's pinned requirements.
-
-    You should commit the result afterwards.
-    """
-    if session.venv_backend == "uv":
-        cmd = ["uv", "pip", "compile"]
-    else:
-        session.install("pip-tools")
-        cmd = ["pip-compile", "--resolver", "backtracking", "--strip-extras"]
-
-    for each, out in REQUIREMENTS_IN:
-        # otherwise output files end up with silly absolute path comments...
-        relative = each.relative_to(ROOT)
-        session.run(*cmd, "--upgrade", "--output-file", out, relative)
 {%- endif %}
