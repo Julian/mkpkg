@@ -119,7 +119,7 @@ def dedented(*args, **kwargs):
     "--style/--no-style",
     "style",
     default=True,
-    help="(don't) run pyflakes by default in nox runs.",
+    help="(don't) run ruff by default in nox runs.",
 )
 @click.option(
     "--init-vcs/--no-init-vcs",
