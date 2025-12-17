@@ -10,7 +10,6 @@ name = "mkpkg"
 description = "A package @Julian uses to create Python packages."
 readme = "README.rst"
 license = "MIT"
-license-files = ["COPYING"]
 requires-python = ">=3.13"
 keywords = ["packaging", "templating"]
 authors = [
@@ -18,7 +17,6 @@ authors = [
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
-  "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.13",
@@ -46,15 +44,19 @@ Source = "https://github.com/Julian/mkpkg"
 
 [dependency-groups]
 docs = [
-    "furo>=2025.9.25",
-    "pygments-github-lexers>=0.0.5",
-    "sphinx>5",
-    "sphinxcontrib-spelling>5",
-    "sphinxext-opengraph>=0.13.0",
+  "furo>=2025.9.25",
+  "pygments-github-lexers>=0.0.5",
+  "sphinx>5",
+  "sphinxcontrib-spelling>5",
+  "sphinxext-opengraph>=0.13.0",
 ]
 test = [
-    "nox>=2025.11.12",
-    "pytest>=9.0.1",
+  "nox>=2025.11.12",
+  "pytest>=9.0.1",
+]
+typing = [
+  { include-group = "test" },
+  "ty",
 ]
 
 [tool.coverage.html]
@@ -148,3 +150,6 @@ from-first = true
 "noxfile.py" = ["ANN", "D100", "S101", "T201"]
 "docs/*" = ["ANN", "D", "INP001"]
 "mkpkg/tests/*" = ["ANN", "D", "RUF012", "S"]
+
+[tool.ty.terminal]
+error-on-warning = true
