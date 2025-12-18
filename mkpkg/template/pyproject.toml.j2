@@ -59,11 +59,11 @@ Source = "https://github.com/Julian/{{ name }}"
 test = [
   "{{ test_dep }}",
 ]
-{%- if docs %}
 typing = [
   { include-group = "test" },
   "ty",
 ]
+{%- if docs %}
 docs = [
   "furo",
   "sphinx>5",
