@@ -71,12 +71,19 @@ def audit(session):
     session.install("pip-audit")
     with NamedTemporaryFile() as tmpfile:
         subprocess.run(
-            ["uv", "pip", "freeze"],
+            ["uv", "export", "--frozen", "--no-header", "--no-emit-project"],
             cwd=ROOT,
             check=True,
             stdout=tmpfile,
         )
-        session.run("python", "-m", "pip_audit", "-r", tmpfile.name)
+        session.run(
+            "python",
+            "-m",
+            "pip_audit",
+            "--disable-pip",
+            "-r",
+            tmpfile.name,
+        )
 
 
 @session(tags=["build"])
