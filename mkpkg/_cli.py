@@ -207,7 +207,7 @@ def main(
     supports = sorted(
         supports,
         key=lambda v: (
-            [int(g) for g in PYVERSION.search(v)[0].split(".")],  # type: ignore[reportOptionalSubscript]
+            [int(g) for g in PYVERSION.search(v)[0].split(".")],  # ty: ignore[not-subscriptable]
             -len(v),
         ),
     )
@@ -225,11 +225,11 @@ def main(
         docs=docs,
         github_owner=github_owner,
         name=name,
-        now=datetime.now(tz=UTC),
+        now=datetime.now(tz=UTC),  # ty: ignore[invalid-argument-type]
         package_name=package_name,
         single_module=single_module,
         style=style,
-        supports=supports,
+        supports=supports,  # ty: ignore[invalid-argument-type]
         test_runner=test_runner,
     )
 
@@ -329,7 +329,7 @@ def main(
             ),
             pypy=any(version.startswith("pypy") for version in supports),
             jython="jython" in supports,
-            minimum_python_version=PYVERSION.search(supports[0])[0],  # type: ignore[reportOptionalSubscript]
+            minimum_python_version=PYVERSION.search(supports[0])[0],  # ty: ignore[not-subscriptable]
         ),
         ".pre-commit-config.yaml": template(".pre-commit-config.yaml"),
         "noxfile.py": env.get_template("noxfile.py.j2").render(
