@@ -12,6 +12,8 @@ on:
     - cron: "{{ schedule_minute }} {{ schedule_hour }} * * *"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   list:
     runs-on: ubuntu-latest
@@ -19,8 +21,12 @@ jobs:
       noxenvs: {% raw %}${{ steps.noxenvs-matrix.outputs.noxenvs }}{% endraw %}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Set up uv
         uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: {% raw %}${{ github.ref_type != 'tag' }}{% endraw %} # zizmor: ignore[cache-poisoning]
       - id: noxenvs-matrix
         run: |
           echo >>$GITHUB_OUTPUT noxenvs=$(
@@ -44,6 +50,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y libenchant-2-dev
         if: runner.os == 'Linux' && startsWith(matrix.noxenv, 'docs')
@@ -53,8 +61,10 @@ jobs:
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: {% raw %}${{ github.ref_type != 'tag' }}{% endraw %} # zizmor: ignore[cache-poisoning]
       - name: Run nox
-        run: {% raw %}uvx nox -s "${{ matrix.noxenv }}" -- ${{ matrix.posargs }}{% endraw %}
+        run: {% raw %}uvx nox -s "${{ matrix.noxenv }}" -- ${{ matrix.posargs }}{% endraw %} # zizmor: ignore[template-injection]
 
   packaging:
     needs: ci
@@ -64,15 +74,17 @@ jobs:
       url: https://pypi.org/p/{{ name }}
 
     permissions:
-      contents: write
-      id-token: write
+      contents: write  # for creating releases
+      id-token: write  # for trusted publishing to PyPI
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Set up uv
         uses: astral-sh/setup-uv@v6
         with:
-          enable-cache: true
+          enable-cache: {% raw %}${{ github.ref_type != 'tag' }}{% endraw %} # zizmor: ignore[cache-poisoning]
 
       - name: Build our distributions
         run: uv run --frozen --with 'build[uv]' -m build --installer=uv
@@ -82,6 +94,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
       - name: Create a Release
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-        run: gh release create {% raw %}${{ github.ref_name }}{% endraw %} dist/* --generate-notes
+        run: gh release create {% raw %}${{ github.ref_name }}{% endraw %} dist/* --generate-notes # zizmor: ignore[template-injection]
         env:
           GH_TOKEN: {% raw %}${{ github.token }}{% endraw %}
