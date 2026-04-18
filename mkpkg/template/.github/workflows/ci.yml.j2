@@ -35,7 +35,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest]
-        noxenv: {% raw %}${{ fromJson(needs.list.outputs.noxenvs) }}{% endraw }
+        noxenv: {% raw %}${{ fromJson(needs.list.outputs.noxenvs) }}{% endraw %}
         posargs: [""]
         include:
           - os: ubuntu-latest
@@ -82,8 +82,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
       - name: Create a Release
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            dist/*
-          generate_release_notes: true
+        run: gh release create {% raw %}${{ github.ref_name }}{% endraw %} dist/* --generate-notes
+        env:
+          GH_TOKEN: {% raw %}${{ github.token }}{% endraw %}
