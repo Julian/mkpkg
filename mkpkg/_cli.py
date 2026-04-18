@@ -60,12 +60,17 @@ def _github_api(url):
 
 def resolve_action(repo):
     """Resolve a GitHub Action to its latest release pinned by SHA."""
-    release = _github_api(
-        f"https://api.github.com/repos/{repo}/releases/latest",
-    )
-    tag = release["tag_name"]
-    commit = _github_api(f"https://api.github.com/repos/{repo}/commits/{tag}")
-    return f"{repo}@{commit['sha']}  # {tag}"
+    try:
+        release = _github_api(
+            f"https://api.github.com/repos/{repo}/releases/latest",
+        )
+        tag = release["tag_name"]
+        commit = _github_api(
+            f"https://api.github.com/repos/{repo}/commits/{tag}",
+        )
+        return f"{repo}@{commit['sha']}  # {tag}"
+    except (urllib.error.URLError, OSError):
+        return repo
 
 
 def resolve_all_actions():
