@@ -9,6 +9,7 @@ import re
 import subprocess
 import sys
 import textwrap
+import urllib.error
 import urllib.request
 
 import click
