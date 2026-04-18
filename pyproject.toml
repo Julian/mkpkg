@@ -10,6 +10,7 @@ name = "mkpkg"
 description = "A package @Julian uses to create Python packages."
 readme = "README.rst"
 license = "MIT"
+license-files = ["COPYING"]
 requires-python = ">=3.13"
 keywords = ["packaging", "templating"]
 authors = [
@@ -73,6 +74,7 @@ exclude_also = [
   "if TYPE_CHECKING:",
   "\\s*\\.\\.\\.\\s*",
 ]
+fail_under = 100
 show_missing = true
 skip_covered = true
 
@@ -129,7 +131,8 @@ ignore = [
   "RET506",
   "RSE102",  # Ha, what, who even knew you could leave the parens off. But no.
   "RUF043",  # This rule makes no sense. "foo.*bar" is a string containing a regex
-  "S",  # Security warnings with lots of false positives, as usual
+  "S603",  # subprocess calls are fine, this just fires on all of them
+  "S607",  # partial executable paths are fine
   "SIM300", # Not sure what heuristic this uses, but it's easily incorrect
   "SLF001",  # Private usage within this package itself is fine
   "TD",  # These TODO style rules are also silly
@@ -149,6 +152,7 @@ from-first = true
 [tool.ruff.lint.per-file-ignores]
 "noxfile.py" = ["ANN", "D100", "S101", "T201"]
 "docs/*" = ["ANN", "D", "INP001"]
+"mkpkg/_cli.py" = ["S310", "S311", "S701"]
 "mkpkg/tests/*" = ["ANN", "D", "RUF012", "S"]
 
 [tool.ty.terminal]

@@ -96,15 +96,6 @@ def build(session):
         session.run("twine", "check", "--strict", tmpdir + "/*")
 
 
-@session()
-def secrets(session):
-    """
-    Check for accidentally included secrets.
-    """
-    session.install("detect-secrets")
-    session.run("detect-secrets", "scan", ROOT)
-
-
 @session(tags=["style"])
 def style(session):
     """

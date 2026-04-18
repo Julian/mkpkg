@@ -14,8 +14,13 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: {% raw %}${{ github.workflow }}-${{ github.ref }}{% endraw %}
+  cancel-in-progress: true
+
 jobs:
   list:
+    name: Identify nox sessions
     runs-on: ubuntu-latest
     outputs:
       noxenvs: {% raw %}${{ steps.noxenvs-matrix.outputs.noxenvs }}{% endraw %}
@@ -34,6 +39,7 @@ jobs:
           )
 
   ci:
+    name: {% raw %}${{ matrix.noxenv }} (${{ matrix.os }}){% endraw %}
     needs: list
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
 
@@ -67,6 +73,7 @@ jobs:
         run: {% raw %}uvx nox -s "${{ matrix.noxenv }}" -- ${{ matrix.posargs }}{% endraw %} # zizmor: ignore[template-injection]
 
   packaging:
+    name: Build and publish
     needs: ci
     runs-on: ubuntu-latest
     environment:
