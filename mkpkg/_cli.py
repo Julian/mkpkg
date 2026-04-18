@@ -168,6 +168,11 @@ def dedented(*args, **kwargs):
     default=False,
     help="create a closed source package.",
 )
+@click.option(
+    "--github-owner",
+    default="Julian",
+    help="the GitHub owner or organization for the package",
+)
 @click.version_option(prog_name="mkpkg")
 def main(
     name,
@@ -185,6 +190,7 @@ def main(
     style,
     init_vcs,
     closed,
+    github_owner,
 ):
     """
     Oh how exciting! Create a new Python package.
@@ -216,6 +222,7 @@ def main(
         cli=cli,
         closed=closed,
         docs=docs,
+        github_owner=github_owner,
         name=name,
         now=datetime.now(tz=UTC),
         package_name=package_name,

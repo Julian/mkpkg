@@ -35,8 +35,8 @@ def entire_domain(host):
 
 linkcheck_ignore = [
     entire_domain("img.shields.io"),
-    "https://github.com/Julian/{{ name }}/actions",
-    "https://github.com/Julian/{{ name }}/workflows/CI/badge.svg",
+    "https://github.com/{{ github_owner }}/{{ name }}/actions",
+    "https://github.com/{{ github_owner }}/{{ name }}/workflows/CI/badge.svg",
 ]
 
 # Ignore some links that only exist once we exist as a package.
