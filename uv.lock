@@ -2,6 +2,10 @@ version = 1
 revision = 3
 requires-python = ">=3.13"
 
+[options]
+exclude-newer = "2026-04-11T14:30:28.979497Z"
+exclude-newer-span = "P7D"
+
 [[package]]
 name = "accessible-pygments"
 version = "0.0.5"
