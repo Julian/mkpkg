@@ -10,6 +10,7 @@ name = "{{ package_name }}"
 description = ""
 readme = "README.rst"
 license = "{% if not closed %}MIT{% else %}Private{% endif %}"
+license-files = ["COPYING"]
 requires-python = ">={{ minimum_python_version }}"
 keywords = []
 authors = [
@@ -86,6 +87,7 @@ exclude_also = [
   "if TYPE_CHECKING:",
   "\\s*\\.\\.\\.\\s*",
 ]
+fail_under = 100
 show_missing = true
 skip_covered = true
 
@@ -142,7 +144,8 @@ ignore = [
   "RET506",
   "RSE102",  # Ha, what, who even knew you could leave the parens off. But no.
   "RUF043",  # This rule makes no sense. "foo.*bar" is a string containing a regex
-  "S",  # Security warnings with lots of false positives, as usual
+  "S603",  # subprocess calls are fine, this just fires on all of them
+  "S607",  # partial executable paths are fine
   "SIM300", # Not sure what heuristic this uses, but it's easily incorrect
   "SLF001",  # Private usage within this package itself is fine
   "TD",  # These TODO style rules are also silly
