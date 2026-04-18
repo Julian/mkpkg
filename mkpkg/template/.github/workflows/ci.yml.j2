@@ -39,7 +39,7 @@ jobs:
         posargs: [""]
         include:
           - os: ubuntu-latest
-            noxenv: "tests-3.12"
+            noxenv: "tests-{{ supports[-1] }}"
             posargs: coverage github
 
     steps:
