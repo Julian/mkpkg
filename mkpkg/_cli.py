@@ -2,12 +2,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from random import randint
 from textwrap import dedent
+import json
 import os
 import pwd
 import re
 import subprocess
 import sys
 import textwrap
+import urllib.request
 
 import click
 import jinja2
@@ -41,6 +43,36 @@ TEST_DEP = {
 TEMPLATE = Path(__file__).with_name("template")
 
 READTHEDOCS_IMPORT_URL = "https://readthedocs.org/dashboard/import/manual/"
+
+GITHUB_ACTIONS = {
+    "checkout": "actions/checkout",
+    "setup_uv": "astral-sh/setup-uv",
+    "pypi_publish": "pypa/gh-action-pypi-publish",
+}
+
+
+def _github_api(url):
+    request = urllib.request.Request(url)
+    request.add_header("Accept", "application/vnd.github.v3+json")
+    with urllib.request.urlopen(request) as response:
+        return json.loads(response.read())
+
+
+def resolve_action(repo):
+    """Resolve a GitHub Action to its latest release pinned by SHA."""
+    release = _github_api(
+        f"https://api.github.com/repos/{repo}/releases/latest",
+    )
+    tag = release["tag_name"]
+    commit = _github_api(f"https://api.github.com/repos/{repo}/commits/{tag}")
+    return f"{repo}@{commit['sha']}  # {tag}"
+
+
+def resolve_all_actions():
+    """Resolve all GitHub Actions to pinned SHA references."""
+    return {
+        name: resolve_action(repo) for name, repo in GITHUB_ACTIONS.items()
+    }
 
 
 def dedented(*args, **kwargs):
@@ -294,9 +326,11 @@ def main(
     }
 
     if not closed:
+        actions = resolve_all_actions()
         files[".github/workflows/ci.yml"] = env.get_template(
             ".github/workflows/ci.yml.j2",
         ).render(
+            actions=actions,
             schedule_hour=randint(3, 7),
             schedule_minute=randint(0, 59),
         )

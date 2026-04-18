@@ -20,11 +20,11 @@ jobs:
     outputs:
       noxenvs: {% raw %}${{ steps.noxenvs-matrix.outputs.noxenvs }}{% endraw %}
     steps:
-      - uses: actions/checkout@v4
+      - uses: {{ actions.checkout }}
         with:
           persist-credentials: false
       - name: Set up uv
-        uses: astral-sh/setup-uv@v6
+        uses: {{ actions.setup_uv }}
         with:
           enable-cache: {% raw %}${{ github.ref_type != 'tag' }}{% endraw %} # zizmor: ignore[cache-poisoning]
       - id: noxenvs-matrix
@@ -49,7 +49,7 @@ jobs:
             posargs: coverage github
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: {{ actions.checkout }}
         with:
           persist-credentials: false
       - name: Install dependencies
@@ -60,7 +60,7 @@ jobs:
         if: runner.os == 'macOS' && startsWith(matrix.noxenv, 'docs')
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v6
+        uses: {{ actions.setup_uv }}
         with:
           enable-cache: {% raw %}${{ github.ref_type != 'tag' }}{% endraw %} # zizmor: ignore[cache-poisoning]
       - name: Run nox
@@ -78,11 +78,11 @@ jobs:
       id-token: write  # for trusted publishing to PyPI
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: {{ actions.checkout }}
         with:
           persist-credentials: false
       - name: Set up uv
-        uses: astral-sh/setup-uv@v6
+        uses: {{ actions.setup_uv }}
         with:
           enable-cache: {% raw %}${{ github.ref_type != 'tag' }}{% endraw %} # zizmor: ignore[cache-poisoning]
 
@@ -91,7 +91,7 @@ jobs:
 
       - name: Publish to PyPI
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: {{ actions.pypi_publish }}
       - name: Create a Release
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
         run: gh release create {% raw %}${{ github.ref_name }}{% endraw %} dist/* --generate-notes # zizmor: ignore[template-injection]
